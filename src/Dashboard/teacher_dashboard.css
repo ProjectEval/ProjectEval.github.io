@@ -1,0 +1,136 @@
+.Classes{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.PlusIcon{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.AddTeacherQ{
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    gap: 10px;
+}
+
+.addTeacherBtn{
+    width: 80px;
+    height: 50px;
+    font-size: small;
+}
+
+.TeachersSearchResults{
+   
+    background-color: grey;
+    width: 100%;
+    min-height: 20px;
+    max-height: 100px;
+    overflow: scroll;
+    /* Make border radius of bottom corners 10px */
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.PlusCircleIcon{
+    width: 20px;
+}
+
+.TeacherSearchResult{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    justify-content: space-between;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+/* Get last element of Teacher Search Results */
+.TeacherSearchResult:last-child{
+    padding-bottom: 5px;
+}
+
+.TeacherSearchResult:hover{
+    background-color: lightgrey;
+}
+
+.TrashIcon{
+    width: 15px;
+    cursor: pointer;
+}
+
+.addedTeacher{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.addedStudent{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.StudentSearchResult{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    justify-content: space-between;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+/* Get last element of Teacher Search Results */
+.StudentSearchResult:last-child{
+    padding-bottom: 5px;
+}
+
+.StudentSearchResult:hover{
+    background-color: lightgrey;
+}
+
+.AddStudentQ{
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    gap: 10px;
+}
+
+.addStudentBtn{
+    width: 80px;
+    height: 50px;
+    font-size: small;
+}
+
+.StudentsSearchResults{
+   
+    background-color: grey;
+    width: 100%;
+    min-height: 20px;
+    max-height: 100px;
+    overflow: scroll;
+    /* Make border radius of bottom corners 10px */
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.CloseIcon{
+    width: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}

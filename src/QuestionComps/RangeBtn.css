@@ -1,0 +1,24 @@
+.RangeIcon {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    border-color: white;
+    border: solid 2px;
+    cursor: pointer;
+}
+
+.RangeIcon.Selected{
+    background-color: lightgreen;
+}
+
+.RangeBtn{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20px;
+}
+
+.RangeHint {
+    font-size: 12px;
+    
+}

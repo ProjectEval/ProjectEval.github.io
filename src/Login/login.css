@@ -1,0 +1,15 @@
+.Login{
+    border: white solid 1px;
+}
+
+.Title{
+    text-align: center;
+}
+
+.Options{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}

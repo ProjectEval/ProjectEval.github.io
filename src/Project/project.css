@@ -1,0 +1,46 @@
+.Center{
+    border: white solid 1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Title{
+    margin-bottom: -10px;
+    text-align: center;
+}
+
+.Students{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.warningDialog{
+    width: 50%;
+}
+
+.EditIcon{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    width: 25px;
+}
+
+.BackArrow{
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    cursor: pointer;
+    width: 30px;
+}
+.CloseIcon{
+    width: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}

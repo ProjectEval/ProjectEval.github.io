@@ -1,0 +1,24 @@
+.ElmtTitle{
+    font-size: small;
+}
+
+.RemoveElmt{
+    cursor: pointer;
+    width: 20px;
+    height: 25px;
+}
+
+.ElmtTopBar{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.ElmtHasComment{
+    padding-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-size: small;
+}

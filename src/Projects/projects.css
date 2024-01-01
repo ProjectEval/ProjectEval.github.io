@@ -1,0 +1,65 @@
+.Center{
+    border: white solid 1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Title{
+    margin-bottom: -10px;
+    text-align: center;
+}
+
+.Projects{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+
+.TeacherIcons{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+}
+
+.BackArrow{
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    cursor: pointer;
+    width: 30px;
+}
+
+.EditIcon{
+    width: 30px;
+    cursor: pointer;
+}
+.LinkIcon{
+    width: 30px;
+    cursor: pointer;
+
+}
+.EditClassDialog{
+    /* width: 50%; */
+}
+
+.Invitees{
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.CloseIcon{
+    width: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}

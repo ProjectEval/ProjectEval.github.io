@@ -1,0 +1,29 @@
+.Center{
+    border: white solid 1px;
+
+}
+
+.Title{
+    text-align: center;
+}
+
+.SubmitEval{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.EvalQuestions{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.BackArrow{
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    cursor: pointer;
+    width: 30px;
+}

@@ -1,0 +1,24 @@
+.Center{
+    border: white solid 1px;
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    flex-direction: column;
+
+}
+
+.Title{
+    text-align: center;
+}
+
+#AddElement{
+    cursor: pointer;
+}
+
+.CloseIcon{
+    width: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}

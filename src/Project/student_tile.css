@@ -1,0 +1,32 @@
+.StudentTile{
+    border-radius: 10px;
+    border: rgb(203, 246, 255) solid 1px;
+    /* height: 50px; */
+    min-height: 50px;
+    min-width: 150px;
+    /* text-align: center; */
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    
+}
+
+.StudentName{
+    /* margin: auto; */
+    font-size: medium;
+    height: 100%;
+    max-width: 150px;
+    text-align: center;
+}
+
+.EvalIcon{
+    width: 20px;
+    cursor: pointer;
+
+    /* margin: auto; */
+}
+
+.PersonIcon{
+    width: 20px;
+    cursor: pointer;
+}

@@ -1,0 +1,44 @@
+.ElmtTitle{
+    font-size: small;
+}
+
+.RemoveElmt{
+    cursor: pointer;
+    width: 20px;
+    height: 25px;
+}
+
+.ElmtTopBar{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.ElmtChoicesTitle{
+    display: flex;
+    align-items: center;
+    /* justify-content: space-evenly; */
+    gap: 10px;
+}
+
+.ElmtChoices{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 120px;
+    overflow: scroll;
+}
+
+.AddChoice{
+    width: 20px;
+    cursor: pointer;
+}
+
+.ElmtHasComment{
+    padding-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-size: small;
+}

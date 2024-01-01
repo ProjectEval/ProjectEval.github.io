@@ -1,0 +1,26 @@
+.ChoiceIcon {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    border-color: white;
+    border: solid 2px;
+    cursor: pointer;
+}
+
+.ChoiceIcon.Selected{
+    background-color: lightgreen;
+}
+
+.Choice{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.ChoiceText {
+    font-size: 12px;
+    cursor: pointer;
+    
+}

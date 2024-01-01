@@ -1,0 +1,18 @@
+.Center{
+    border: white solid 1px;
+
+}
+
+.Title{
+    text-align: center;
+    font-size: 40px;
+}
+
+
+.BackArrow{
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    cursor: pointer;
+    width: 30px;
+}

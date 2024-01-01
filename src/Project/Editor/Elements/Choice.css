@@ -1,0 +1,18 @@
+.Choice{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.ChoiceText {
+    font-size: 12px;
+    cursor: pointer;
+    
+}
+
+.RemoveChoice{
+    width: 15px;
+    cursor: pointer;
+}

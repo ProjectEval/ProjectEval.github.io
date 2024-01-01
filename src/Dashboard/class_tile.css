@@ -1,0 +1,24 @@
+.ClassTile{
+    border-radius: 10px;
+    border: rgb(203, 246, 255) solid 1px;
+    /* height: 50px; */
+    min-height: 50px;
+    width: 80%;
+    /* text-align: center; */
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    ;
+}
+
+.ClassName{
+    margin: auto;
+    font-size: large;
+}
+
+.ClassTrashIcon{
+    margin-left: auto;
+    margin-right: 10px;
+    width: 20px;
+    cursor: pointer;
+}
