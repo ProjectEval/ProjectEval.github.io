@@ -3,7 +3,7 @@ import "./forgot_password.css"
 import { forgotPassword } from '../../API/auth'
 
 import BackArrow from "../../assets/back_arrow.png"
-import ErrorDialog from '../../error_dialog'
+import InfoDialog from '../../Dialogs/info_dialog'
 
 
 function ForgotPassword() {
@@ -50,7 +50,7 @@ function ForgotPassword() {
         {sendingLink ? <div className='Loading'></div> : <button onClick={handleForgotPassword}>Send Reset Password Link</button>}
         <br />
       </div>
-      <ErrorDialog error={error} errorTitle={errorTitle} errorModalRef={errorModalRef} onClose={done}/>
+      <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef} onClose={done}/>
     </>
   )
 }

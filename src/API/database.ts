@@ -2,9 +2,9 @@ import {
     getFirestore, doc, query,getDoc,setDoc, collection, addDoc, updateDoc, getDocs, where, Firestore, orderBy, deleteDoc
 }
 from "firebase/firestore"
-import {ClassLocal, Class, Eval, Project, Student, Teacher, EvalSubmission} from "../firebase_types"
+import {ClassLocal, Class, Eval, Project, Student, Teacher, EvalSubmission} from "../CustomTypes/firebase_types"
 import { app } from "./firebase"
-import { Questions } from "../QuestionComps/QuestionTypes"
+import { Questions } from "../CustomTypes/QuestionTypes"
 const db: Firestore = getFirestore(app)
 import localClassesRaw from "../../LocalData/Classes.json"
 import localStudentsRaw from "../../LocalData/Students.json"
@@ -37,7 +37,9 @@ function getStudentClassesLocal(studentId: string): Class[] {
                 name: classData.name,
                 students: classData.students,
                 id: classData.id,
-                teachers: classData.teachers
+                teachers: classData.teachers,
+                background: classData.background,
+                backgroundColor: classData.backgroundColor
             })
         }
     }
@@ -55,7 +57,9 @@ async function getStudentClassesFB(studentId: string): Promise<Class[]> {
             name: classData.name,
             students: classData.students,
             id: classData.id,
-            teachers: classData.teachers
+            teachers: classData.teachers,
+            background: classData.background,
+            backgroundColor: classData.backgroundColor
         })
     })
     return classes
@@ -77,7 +81,9 @@ function getTeachersClassesLocal(teacherId: string): Class[] {
                 name: classData.name,
                 students: classData.students,
                 id: classData.id,
-                teachers: classData.teachers
+                teachers: classData.teachers,
+                background: classData.background,
+                backgroundColor: classData.backgroundColor
             })
         }
     }
@@ -96,7 +102,9 @@ async function getTeachersClassesFB(teacherId: string): Promise<Class[]> {
             name: classData.name,
             students: classData.students,
             id: classData.id,
-            teachers: classData.teachers
+            teachers: classData.teachers,
+            background: classData.background,
+            backgroundColor: classData.backgroundColor
         })
     })
     return classes
@@ -122,7 +130,11 @@ function getStudentProjectsLocal(studentId: string, classId: string): Project[] 
                     students: projectData.students,
                     id: projectData.id,
                     eval_template: projectData.eval_template as Questions,
-                    evals: projectData.evals
+                    evals: projectData.evals,
+                    background: projectData.background,
+                    backgroundColor: projectData.backgroundColor,
+                    cardColor: projectData.cardColor,
+                    evalBackgroundColor: projectData.evalBackgroundColor
                 })
             }
         }
@@ -143,7 +155,11 @@ async function getStudentProjectsFB(studentId: string, classId: string): Promise
             students: projectData.students,
             id: projectData.id,
             eval_template: projectData.eval_template,
-            evals: projectData.evals
+            evals: projectData.evals,
+            background: projectData.background,
+            backgroundColor: projectData.backgroundColor,
+            cardColor: projectData.cardColor,
+            evalBackgroundColor: projectData.evalBackgroundColor
         })
     })
     return projects
@@ -273,34 +289,39 @@ async function createProjectEvalTemplateFB(classId: string, projectId: string, e
     }
 }
 
-export async function editProject(classId: string, projectId: string, name: string, students: string[]){
+export async function editProject(classId: string, projectId: string, name: string, students: string[], background: string, backgroundColor: string, cardColor: string, evalBackgroundColor: string){
     if(ISLOCAL){
-        await editProjectLocal(classId, projectId, name, students)
+        await editProjectLocal(classId, projectId, name, students, background, backgroundColor, cardColor, evalBackgroundColor)
         return
     }
-    await editProjectFB(classId, projectId, name, students)
+    await editProjectFB(classId, projectId, name, students, background, backgroundColor, cardColor, evalBackgroundColor)
 }
 
-async function editProjectLocal(classId: string, projectId: string, name: string, students: string[]){
+async function editProjectLocal(classId: string, projectId: string, name: string, students: string[], background: string, backgroundColor: string, cardColor: string, evalBackgroundColor: string){
     const classData = localClasses[classId]
     if(classData) {
         const projectData = classData.projects[projectId]
         if(projectData) {
             projectData.name = name
             projectData.students = students
+            projectData.background = background
+            projectData.backgroundColor = backgroundColor
+            projectData.cardColor = cardColor
+            projectData.evalBackgroundColor = evalBackgroundColor
+
         }
     }
     await saveFile("Classes", JSON.stringify(localClasses))
 }
 
-async function editProjectFB(classId: string, projectId: string, name: string, students: string[]){
+async function editProjectFB(classId: string, projectId: string, name: string, students: string[], background: string, backgroundColor: string, cardColor: string, evalBackgroundColor: string){
     const studentClass = doc(db, "Classes", classId)
     const project = doc(studentClass, "Projects", projectId)
     const projectData = (await getDoc(project)).data()
     if (projectData) {
         
         
-        await updateDoc(project, {name: name, students: students})
+        await updateDoc(project, {name: name, students: students, background: background, backgroundColor: backgroundColor, cardColor: cardColor, evalBackgroundColor: evalBackgroundColor})
     }
 }
 
@@ -443,7 +464,7 @@ async function addTeacherDocFB(name:string, email:string, id:string, onFinish: (
     onFinish()
 }
 
-export async function isTeacher(id:string): Promise<boolean> {
+export async function checkIfTeacher(id:string): Promise<boolean> {
     console.log(`Checking if ${id} is a teacher`)
     if(ISLOCAL) {
         return isTeacherLocal(id)
@@ -547,7 +568,9 @@ async function createClassLocal(name: string, students: string[], teachers: stri
         students: students,
         teachers: teachers,
         id: id,
-        projects: {}
+        projects: {},
+        background: "",
+        backgroundColor: ""
     }
     console.log("Created class with id " + id)
     await saveFile("Classes",JSON.stringify(localClasses))
@@ -558,7 +581,9 @@ async function createClassFB(name: string, students: string[], teachers: string[
     const id = await addDoc(collection(db, "Classes"), {
         name: name,
         students: students,
-        teachers: teachers
+        teachers: teachers,
+        background: "",
+        backgroundColor: ""
     })
 
     //Update the class with the id
@@ -584,7 +609,11 @@ async function createProjectLocal(name: string, students: string[], classId: str
         students: students,
         eval_template: [],
         evals: [],
-        id: id
+        id: id,
+        background: "",
+        backgroundColor: "#21212152",
+        cardColor: "",
+        evalBackgroundColor: "#21212152"
     }
     console.log("Created project with id " + id)
     await saveFile("Classes",JSON.stringify(localClasses))
@@ -595,7 +624,11 @@ async function createProjectFB(name: string, students: string[], classId: string
         name: name,
         students: students,
         eval_template: [],
-        evals: []
+        evals: [],
+        background: "",
+        backgroundColor: "#21212152",
+        cardColor: "",
+        evalBackgroundColor: "#21212152"
     })
 
     //Update the class with the id
@@ -623,7 +656,11 @@ function getClassProjectsLocal(classId: string): Project[] {
                 students: projectData.students,
                 id: projectData.id,
                 eval_template: projectData.eval_template as Questions,
-                evals: projectData.evals
+                evals: projectData.evals,
+                background: projectData.background,
+                backgroundColor: projectData.backgroundColor,
+                cardColor: projectData.cardColor,
+                evalBackgroundColor: projectData.evalBackgroundColor
             })
         }
     }
@@ -642,7 +679,11 @@ async function getClassProjectsFB(classId: string): Promise<Project[]> {
             students: projectData.students,
             id: projectData.id,
             eval_template: projectData.eval_template,
-            evals: projectData.evals
+            evals: projectData.evals,
+            background: projectData.background,
+            backgroundColor: projectData.backgroundColor,
+            cardColor: projectData.cardColor,
+            evalBackgroundColor: projectData.evalBackgroundColor
         })
     })
     return projects
@@ -660,7 +701,7 @@ function getClassDataLocal(classId: string): Class {
     if (classData) {
         return classData as Class
     }
-    return {name: "", id: "", students: [], teachers: []}
+    return {name: "", id: "", students: [], teachers: [], background: "", backgroundColor: ""}
 }
 
 async function getClassDataFB(classId: string): Promise<Class> {
@@ -669,7 +710,7 @@ async function getClassDataFB(classId: string): Promise<Class> {
     if (classData) {
         return classData as Class
     }
-    return {name: "", id: "", students: [], teachers: []}
+    return {name: "", id: "", students: [], teachers: [], background: "", backgroundColor: ""}
 }
 
 export async function getProjectData(classId:string, projectId: string): Promise<Project> {
@@ -691,7 +732,7 @@ async function getProjectDataFB(classId:string, projectId: string): Promise<Proj
     if (projectData) {
         return projectData as Project
     }
-    return {name: "", id: "", students: [], eval_template: [], evals: []}
+    return {name: "", id: "", students: [], eval_template: [], evals: [], background: "", backgroundColor: "", cardColor: "", evalBackgroundColor: ""}
 }
 
 export async function getPastEvals(classId: string, projectId: string, studentId: string, userId: string): Promise<EvalSubmission[]> {
@@ -780,29 +821,33 @@ async function getTeachersDataFB(teacherIds: string[]): Promise<Teacher[]> {
     return teachers
 }
 
-export async function editClass(classId: string, name: string, students: string[], teachers: string[]) {
+export async function editClass(classId: string, name: string, students: string[], teachers: string[], background: string, backgroundColor: string) {
     if(ISLOCAL) {
-        await editClassLocal(classId, name, students, teachers)
+        await editClassLocal(classId, name, students, teachers, background, backgroundColor)
         return
     }
-    await editClassFB(classId, name, students, teachers)
+    await editClassFB(classId, name, students, teachers, background, backgroundColor)
 }
 
-async function editClassLocal(classId: string, name: string, students: string[], teachers: string[]) {
+async function editClassLocal(classId: string, name: string, students: string[], teachers: string[], background: string, backgroundColor: string) {
     const classData = localClasses[classId]
     if(classData) {
         classData.name = name
         classData.students = students
         classData.teachers = teachers
+        classData.background = background,
+        classData.backgroundColor = backgroundColor
     }
     await saveFile("Classes",JSON.stringify(localClasses))
 }
 
-async function editClassFB(classId: string, name: string, students: string[], teachers: string[]) {
+async function editClassFB(classId: string, name: string, students: string[], teachers: string[], background: string, backgroundColor: string) {
     await updateDoc(doc(db, "Classes", classId), {
         name: name,
         students: students,
-        teachers: teachers
+        teachers: teachers,
+        background: background,
+        backgroundColor: backgroundColor
     })
 }
 
@@ -953,7 +998,9 @@ function getClassesLocal(): Class[] {
             name: classData.name,
             students: classData.students,
             id: classData.id,
-            teachers: classData.teachers
+            teachers: classData.teachers,
+            background: classData.background,
+            backgroundColor: classData.backgroundColor
         })
     }
     return classes
@@ -969,7 +1016,9 @@ async function getClassesFB(): Promise<Class[]> {
             name: classData.name,
             students: classData.students,
             id: classData.id,
-            teachers: classData.teachers
+            teachers: classData.teachers,
+            background: classData.background,
+            backgroundColor: classData.backgroundColor
         })
     })
     return classes
@@ -1065,4 +1114,49 @@ async function joinClassFB(classId: string, studentId: string) {
     if (classData) {
         await updateDoc(studentClass, {students: [...classData.students, studentId]})
     }
+}
+
+export async function copyProject(classId: string, projectId: string) {
+    if(ISLOCAL) {
+        await copyProjectLocal(classId, projectId)
+        return
+    }
+    await copyProjectFB(classId, projectId)
+}
+
+async function copyProjectLocal(classId: string, projectId: string) {
+    const classData = localClasses[classId]
+    const projectData = classData.projects[projectId]
+    const id = "project" + Math.floor(Math.random() * 1000000000)
+    localClasses[classId].projects[id] = {
+        name: projectData.name + " (Copy)",
+        students: [],
+        eval_template: projectData.eval_template,
+        evals: [],
+        id: id,
+        background: projectData.background,
+        backgroundColor: projectData.backgroundColor,
+        cardColor: projectData.cardColor,
+        evalBackgroundColor: projectData.evalBackgroundColor
+    }
+    await saveFile("Classes", JSON.stringify(localClasses))
+}
+
+async function copyProjectFB(classId: string, projectId: string) {
+    const projectData = await getProjectData(classId, projectId)
+    const id = await addDoc(collection(db, "Classes", classId, "Projects"), {
+        name: projectData.name + " (Copy)",
+        students: [],
+        eval_template: projectData.eval_template,
+        evals: [],
+        background: projectData.background,
+        backgroundColor: projectData.backgroundColor,
+        cardColor: projectData.cardColor,
+        evalBackgroundColor: projectData.evalBackgroundColor
+    })
+
+    //Update the class with the id
+    await updateDoc(doc(db, "Classes", classId, "Projects", id.id), {
+        id: id.id
+    })
 }

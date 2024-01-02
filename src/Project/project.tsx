@@ -1,13 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import "./project.css"
-import { Student } from "../firebase_types";
-import { editProject, getProjectData, getProjectEvalTemplate, getStudentData, getStudents, getStudentsInClass, getStudentsInProject } from "../API/database";
+import { Student } from "../CustomTypes/firebase_types";
+import { checkIfTeacher, copyProject, editProject, getProjectData, getProjectEvalTemplate, getStudentData, getStudents, getStudentsInClass, getStudentsInProject } from "../API/database";
 import StudentTile from "./student_tile";
 import EditIcon from "../assets/square_pencil.png"
-import SearchBar from "../Dashboard/search_bar";
+import SearchBar from "../Components/search_bar";
 import BackArrow from "../assets/back_arrow.png"
 import CloseIcon from "../assets/close.png"
 import { getUserId } from "../API/auth";
+import CopyIcon from "../assets/copy.png"
+import InfoDialog from "../Dialogs/info_dialog";
+import { set } from "firebase/database";
+import ChooseBackgroundDialog from "../Dialogs/choose_background_dialog";
+import CloseWarningDialog from "../Dialogs/close_warning_dialog";
+import ChooseColorDialog from "../Dialogs/choose_colors_dialog";
 
 
 function Project() {
@@ -22,6 +28,17 @@ function Project() {
     const editProjectRef = useRef<HTMLDialogElement>(null)
     const [editProjName, setEditProjName] = useState<string>("")
     const [userId, setUserId] = useState<string>("")
+    const infoModalRef = useRef<HTMLDialogElement>(null)
+    const [info, setInfo] = useState<string>("")
+    const [Title, setTitle] = useState<string>("")
+    const [background, setBackground] = useState<string>("")
+    const [backgroundColor, setBackgroundColor] = useState<string>("")
+    const [evalBackgroundColor, setEvalBgColor] = useState<string>("")
+    const [cardColor, setCardColor] = useState<string>("")
+    const editColorRef = useRef<HTMLDialogElement>(null)
+    const editBackgroundRef = useRef<HTMLDialogElement>(null)
+    const closeWarningRef = useRef<HTMLDialogElement>(null)
+
 
 
     useEffect(() => {
@@ -49,6 +66,10 @@ function Project() {
       const projectData = await getProjectData(classId, projectId)
       setProjectName(projectData.name)
       setEditProjName(projectData.name)
+      setBackground(projectData.background)
+      setCardColor(projectData.cardColor)
+      setBackgroundColor(projectData.backgroundColor)
+      setEvalBgColor(projectData.evalBackgroundColor)
       setProjectId(projectId)
       const res = await getStudentsInProject(classId, projectId)
       console.log(res)
@@ -56,11 +77,11 @@ function Project() {
       setAddedStudents(res)
       const sRes: Student[] = await getStudentsInClass(classId)
       setAllStudents(sRes)
-      const userType = localStorage.getItem("userType")
-      let isTeacher: boolean = false
-      if (userType == "Teacher"){
+      const isTeacher = await checkIfTeacher(userId as string)
+
+      if (isTeacher){
           setIsTeacher(true)
-          isTeacher = true
+
       }
       if(isTeacher){
           const projectEvalTemplate = await getProjectEvalTemplate(classId, projectId)
@@ -76,7 +97,7 @@ function Project() {
       addedStudents.forEach((student) => {
         studentIds.push(student.id)
       })
-      await editProject(classId, projectId, editProjName, studentIds)
+      await editProject(classId, projectId, editProjName, studentIds, background, backgroundColor, cardColor, evalBackgroundColor)
       editProjectRef.current?.close()
       await fetchProjects()
 
@@ -84,11 +105,21 @@ function Project() {
 
   return (
     <>
-     <div className='Center'>
+     <div className={'Center ' + background} style={{backgroundColor: backgroundColor}}>
         <h2 className='Title'>{ProjectName}</h2>
-        {isTeacher ? <img src={EditIcon} alt="edit project" className='EditIcon' onClick={() => {
+        {isTeacher && <div className="TeacherIcons">
+          <img src={CopyIcon} alt="copy project" className='CopyIcon' onClick={async () => {
+            await copyProject(classId, projectId)
+            setInfo("Project copied successfully!")
+            setTitle("Project Copied")
+            infoModalRef.current?.showModal()
+
+          }}/>
+          <img src={EditIcon} alt="edit project" className='EditIcon' onClick={() => {
           editProjectRef.current?.showModal()
-        }}/> : null}
+        }}/>
+        </div>
+       }
         <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
           const url = new URL(window.location.href)     
           url.searchParams.delete("projectId")
@@ -119,36 +150,59 @@ function Project() {
               }}>Close</button>
 
       </dialog>
-      <dialog ref={editProjectRef}>
+      <dialog ref={editProjectRef} className="EditProjDialog">
         <h2>Edit Project</h2>
         <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
           editProjectRef.current?.close()
         }}/>
         <form>
-          <label htmlFor="projectName">Project Name:</label>
-          <span> </span>
-          <input type="text" name="projectName" id="projectName" value={editProjName} onChange={(e) => {
-            setEditProjName(e.target.value)
-          }}/>
-          <br />
-          
-          <label htmlFor="">Students: </label>
-            <SearchBar<Student> name="Student"  currentUserId={userId} content={allStudents} defaultAddedContent={students} updateContent={(content) => {
-              setAddedStudents(content)
-            }}/>
-          <br />
-          <button type="button" onClick={() => {
-                const url = new URL(window.location.origin)     
-                url.searchParams.set("projectId", projectId)
-                url.searchParams.set("classId", classId)
-                window.location.href = url.origin + "/Project/Editor/" + url.search 
-          }}>Edit Project Template</button>
-          <br />
-          <br />
-          <button type="button" onClick={handleEditProject}>Edit Project</button>
+          <div className="EditSides">
+            <div className="EditLeft">
+              <label htmlFor="projectName">Project Name:</label>
+              <span> </span>
+              <input type="text" name="projectName" id="projectName" value={editProjName} onChange={(e) => {
+                setEditProjName(e.target.value)
+              }}/>
+              <br />
+            
+            <label htmlFor="">Students: </label>
+              <SearchBar<Student> name="Student"  currentUserId={userId} content={allStudents} defaultAddedContent={students} updateContent={(content) => {
+                setAddedStudents(content)
+              }}/>
+              </div>
+              <div className="EditRight">
+              <button type='button' onClick={() => {
+                editBackgroundRef.current?.showModal()
+              }}>Edit Background</button>
+              <br />
+              <br />
+              <button type='button' onClick={() => {
+                editColorRef.current?.showModal()
+              }}>Edit Colors</button>
+              <br />
+              <br />
+              <button type="button" onClick={() => {
+                    const url = new URL(window.location.origin)     
+                    url.searchParams.set("projectId", projectId)
+                    url.searchParams.set("classId", classId)
+                    window.location.href = url.origin + "/Project/Editor/" + url.search 
+              }}>Edit Project Template</button>
+              </div>
+          </div>
+          <button type="button" onClick={handleEditProject}>Save Project</button>
             
         </form>
       </dialog>
+      <InfoDialog info={info} Title={Title} infoModalRef={infoModalRef} onClose={() => {
+        const url = new URL(window.location.href)
+        url.searchParams.delete("projectId")
+        window.location.href = url.origin + "/Projects/" + url.search
+
+      }}/>
+      <CloseWarningDialog closeWarningRef={closeWarningRef} connectedRef={editProjectRef}/>
+      <ChooseBackgroundDialog setBackground={setBackground} backgroundRef={editBackgroundRef} currentBackground={background}/>
+      <ChooseColorDialog setBgColor={setBackgroundColor} colorRef={editColorRef} currentBgColor={backgroundColor} isProject={true} currentTileColor={cardColor} setTileColor={setCardColor} currentEvalBgColor={evalBackgroundColor} setEvalBgColor={setEvalBgColor}/>
+
     </>
   )
 }

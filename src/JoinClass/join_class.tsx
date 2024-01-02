@@ -3,10 +3,10 @@ import "./join_class.css"
 
 
 
-import ErrorDialog from '../error_dialog'
+import InfoDialog from '../Dialogs/info_dialog'
 
 import { getUserId } from '../API/auth'
-import { getClassData, isTeacher, joinClass } from '../API/database'
+import { getClassData, checkIfTeacher, joinClass } from '../API/database'
 
 
 function JoinClass() {
@@ -37,7 +37,7 @@ function JoinClass() {
       setClassId(classId)
       const classData = await getClassData(classId)
       setClassName(classData.name)
-      const teacher = await isTeacher(userId as string)
+      const teacher = await checkIfTeacher(userId as string)
       if(teacher){
         window.location.href = "/Projects/" + window.location.search
       }
@@ -62,7 +62,7 @@ function JoinClass() {
         <button onClick={handleJoinClass}>Join Class</button>
         <br />
       </div>
-      <ErrorDialog error={error} errorTitle={errorTitle} errorModalRef={errorModalRef}/>
+      <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef}/>
     </>
   )
 }

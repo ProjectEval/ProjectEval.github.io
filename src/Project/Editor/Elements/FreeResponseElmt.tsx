@@ -1,5 +1,5 @@
 // import { useState } from 'react'
-import { Answer, FreeResponseAnswer, Question } from "../../../QuestionComps/QuestionTypes";
+import { Answer, FreeResponseAnswer, Question } from "../../../CustomTypes/QuestionTypes";
 import "./FreeResponseElmt.css"
 import Trash from '../../../assets/trash.png'
 

@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import "./editor.css"
 import Plus from "../../assets/plus_circle.png"
 import FreeResponseElmt from './Elements/FreeResponseElmt'
-import { Answer, Question, Questions } from '../../QuestionComps/QuestionTypes'
+import { Answer, Question, Questions } from '../../CustomTypes/QuestionTypes'
 import MultiChoiceElmt from './Elements/MultiChoiceElmt'
 import { createProjectEvalTemplate, getProjectData } from '../../API/database'
 import MultiSelectElmt from './Elements/MultiSelectElmt'
 import CloseIcon from "../../assets/close.png"
 import RangeElmt from './Elements/RangeElmt'
+import BackArrow from "../../assets/back_arrow.png"
 
 
 function Editor() {
@@ -15,6 +16,7 @@ function Editor() {
   const modalRef = useRef<HTMLDialogElement>(null)
   const [classId, setClassId] = useState<string>("")
   const [projectId, setProjectId] = useState<string>("")
+  const [background, setBackground] = useState<string>("")
 
   useEffect(()=>{
     (async () => {
@@ -30,6 +32,7 @@ function Editor() {
       const classId = params.get("classId")!
       const projectData = await getProjectData(classId, projectId)
       setElmts(projectData.eval_template)
+      setBackground(projectData.background)
       setProjectId(projectId)
       setClassId(classId)
     })()
@@ -79,8 +82,12 @@ function Editor() {
 
   return (
     <>
-      <div className='Center'>
+      <div className={'Center ' + background}>
         <h2 className='Title'>Evaluation Editor</h2>
+        <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
+          const url = new URL(window.location.href)
+          window.location.href = url.origin + "/Project/" + url.search
+        }}/>
         {elements.map((element: Question<Answer>, index: number) => (
             element.Answer.Type == "FreeResponse" ? <FreeResponseElmt key={element.id} handleRemoveElmt={removeElement(element.id)} element={element} handleUpdateElmt={updateQuestion(index)}/>
             : element.Answer.Type == "MultiChoice" ? <MultiChoiceElmt key={element.id} handleRemoveElmt={removeElement(element.id)} element={element} handleUpdateElmt={updateQuestion(index)}/>

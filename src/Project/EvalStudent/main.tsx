@@ -13,7 +13,10 @@ async function checkLogin() {
 }
 
 
+(async () => {
   await checkLogin()
+})()
+
 
 
 

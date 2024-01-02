@@ -1,4 +1,4 @@
-import { EvalSubmission } from "../firebase_types";
+import { EvalSubmission } from "./firebase_types";
 
 export type Question<T> = {
     Question: string;
@@ -30,6 +30,6 @@ export type FreeResponseAnswer = {
 }
 export type Questions = Question<Answer>[]
 
-export type QuestionProps<T> = {question: Question<T>; updateEval: (answer: string | number) => void; getEval?: () => EvalSubmission; submission: EvalSubmission}
+export type QuestionProps<T> = {question: Question<T>; updateEval: (answer: string | number) => void; getEval?: () => EvalSubmission; submission: EvalSubmission; updateEvalComment: (comment: string) => void;}
 
 export type Answer = RangeAnswer | MultiChoiceAnswer | MultiSelectAnswer | FreeResponseAnswer

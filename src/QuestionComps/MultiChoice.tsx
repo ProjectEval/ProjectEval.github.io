@@ -1,9 +1,9 @@
 import Choice from './Choice'
 import './MultiChoice.css'
-import { MultiChoiceAnswer, QuestionProps } from './QuestionTypes'
+import { MultiChoiceAnswer, QuestionProps } from '../CustomTypes/QuestionTypes'
 
 
-function MultiChoice({question, updateEval, submission} :QuestionProps<MultiChoiceAnswer>) {
+function MultiChoice({question, updateEval, submission, updateEvalComment} :QuestionProps<MultiChoiceAnswer>) {
     function handleChangeChoice(choice: string){
         // document.getElementById(question.id)!.dataset.value = choice
         updateEval(choice)
@@ -17,6 +17,12 @@ function MultiChoice({question, updateEval, submission} :QuestionProps<MultiChoi
                 <Choice text={text} handleChangeChoice={handleChangeChoice} selectedValue={submission.value as string}/>
             ))}
         </div>
+        <br />
+        {question.hasComment && <><label htmlFor="">Comment: </label>
+
+                <textarea name="" className="CommentElmt" value={submission.comment} onChange={(e) => {
+                    updateEvalComment(e.target.value)
+                }} ></textarea></>}
       </div>
       
     </>

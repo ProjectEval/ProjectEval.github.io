@@ -3,10 +3,14 @@ import "./signup.css"
 import { createUser } from '../API/auth'
 import BackArrow from "../assets/back_arrow.png"
 import { checkIfUserNameTaken } from '../API/database'
-import ErrorDialog from '../error_dialog'
+import InfoDialog from '../Dialogs/info_dialog'
 
+type SignupProps = {
+  background: string;
+  setLoginState: (state: string) => void;
+}
 
-function Signup() {
+function Signup({background, setLoginState}: SignupProps) {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [confirmPassword, setConfirmPassword] = useState<string>("")
@@ -54,11 +58,14 @@ function Signup() {
 
   return (
     <>
-      <div className='Center'>
+      <div className={'Center ' + background}>
         <h2 className='Title'>Sign Up</h2>
         <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
           if(userType == ""){
-            window.location.href = "/Login/" + window.location.search
+            setLoginState("")
+            setEmail("")
+            setPassword("")
+            setName("")
           } else {
             setUserType("")
             setEmail("")
@@ -94,7 +101,7 @@ function Signup() {
         </>}
         <br />
       </div>
-      <ErrorDialog error={error} errorTitle={errorTitle} errorModalRef={errorModalRef}/>
+      <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef}/>
     </>
   )
 }

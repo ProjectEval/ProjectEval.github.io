@@ -4,15 +4,16 @@ type RangeProps = {
     answer: string;
     max: number;
     comment?: string;
+    cardColor: string
 }
 
-function RangeSubmissionCard({answer, comment, max}: RangeProps) {
+function RangeSubmissionCard({answer, comment, max, cardColor}: RangeProps) {
   
 
   
   return (
     <>
-      <div className='RangeSubmissionCard'>
+      <div className='RangeSubmissionCard'  style={{backgroundColor: cardColor}}>
         <h2>Answer: {answer} out of {max}</h2>
         <h3>Comment: {comment}</h3>
       </div>

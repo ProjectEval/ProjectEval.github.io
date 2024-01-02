@@ -1,5 +1,5 @@
 // import { useState } from 'react'
-import { Answer, MultiChoiceAnswer, Question } from "../../../QuestionComps/QuestionTypes";
+import { Answer, MultiChoiceAnswer, Question } from "../../../CustomTypes/QuestionTypes";
 import "./MultiChoiceElmt.css"
 import Trash from '../../../assets/trash.png'
 import Plus from '../../../assets/plus_circle.png'

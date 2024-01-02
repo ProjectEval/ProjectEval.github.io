@@ -3,7 +3,7 @@ import EvalIcon from "./eval_icon.png"
 import PersonIcon from "./person_icon.png"
 import { useEffect, useState } from "react"
 import { getUserId } from "../API/auth"
-import { isTeacher } from "../API/database"
+import { checkIfTeacher } from "../API/database"
 
 type StudentTileProps = {
     name: string
@@ -19,7 +19,7 @@ function StudentTile({name, id, projectId, classId, projectName}: StudentTilePro
   useEffect(() => {
     (async () => {
       const userId = await getUserId()
-      const teacher = await isTeacher(userId as string)
+      const teacher = await checkIfTeacher(userId as string)
       if (userId == id || teacher){
         setIsUser(true)
       }

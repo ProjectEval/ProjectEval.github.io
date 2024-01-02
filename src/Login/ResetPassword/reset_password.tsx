@@ -3,7 +3,7 @@ import "./reset_password.css"
 import { resetPassword } from '../../API/auth'
 
 import BackArrow from "../../assets/back_arrow.png"
-import ErrorDialog from '../../error_dialog'
+import InfoDialog from '../../Dialogs/info_dialog'
 
 
 function ResetPassword() {
@@ -66,7 +66,7 @@ function ResetPassword() {
         {resettingPassword ? <div className='Loading'></div> : <button onClick={handleResetPassowrd}>Reset Password</button>}
         <br />
       </div>
-      <ErrorDialog error={error} errorTitle={errorTitle} errorModalRef={errorModalRef} onClose={() => {
+      <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef} onClose={() => {
         window.location.href = "/Login/"
       }}/>
     </>

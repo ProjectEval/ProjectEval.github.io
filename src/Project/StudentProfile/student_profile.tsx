@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import "./student_profile.css"
-import { Answer, Question, Questions } from '../../QuestionComps/QuestionTypes'
-import { getProjectEvalTemplate, getStudentData, getStudentEvals } from '../../API/database'
-import { Eval, EvalSubmission, Student } from '../../firebase_types'
+import { Answer, Question, Questions } from '../../CustomTypes/QuestionTypes'
+import { getProjectData, getProjectEvalTemplate, getStudentData, getStudentEvals } from '../../API/database'
+import { Eval, EvalSubmission, Student } from '../../CustomTypes/firebase_types'
 import { getUserId } from '../../API/auth'
 import BackArrow from "../../assets/back_arrow.png"
 import QuestionCard from './question_card'
@@ -24,6 +24,10 @@ function StudentProfile() {
     const [evalSubmissions, setEvalSubmissions] = useState<Eval[]>([])
     const [evalQs, setEvalQs] = useState<Questions>([])
     const [matchedQSubs, setMatchedQSubs] = useState<EvalReview[]>([])
+    const [background, setBackground] = useState<string>("")
+    const [evalBackgroundColor, setEvalBgColor] = useState<string>("")
+    const [cardColor, setCardColor] = useState<string>("")
+
     useEffect(() => {
        async function fetchData(){
             const url: string = window.location.search
@@ -53,6 +57,10 @@ function StudentProfile() {
             if (res.id == userId){
                 setIsCurrentStudent(true)
             }
+            const projectData = await getProjectData(classId, projectId)
+            setEvalBgColor(projectData.evalBackgroundColor)
+            setCardColor(projectData.cardColor)
+            setBackground(projectData.background)
             const evals: Eval[] = await getStudentEvals(classId, projectId, studentId)
             setEvalSubmissions(evals)
             if(evals.length == 0){
@@ -60,6 +68,7 @@ function StudentProfile() {
             }
             console.log(evals)
             const evalQs: Questions = await getProjectEvalTemplate(classId, projectId)
+            
             setEvalQs(evalQs)
             const matchedQSubs: EvalReview[] = []
             for(let i = 0; i < evalQs.length; i++){
@@ -81,7 +90,7 @@ function StudentProfile() {
 
   return (
     <>
-        {student != undefined ? <div className='Center'>
+        {student != undefined ? <div className={'Center ' + background} style={{backgroundColor: evalBackgroundColor}}>
             <h2 className='Title'>{isCurrentStudent ? "Your Profile" : student.name + "'s Profile"}</h2>
             <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
           const url = new URL(window.location.href)     
@@ -91,7 +100,7 @@ function StudentProfile() {
         }}/>
             <div className='Results'>
             {evalSubmissions.length > 0 ? matchedQSubs.map((q) => (
-                <QuestionCard question={q.question} submissions={q.submissions}/>
+                <QuestionCard question={q.question} submissions={q.submissions} cardColor={cardColor}/>
             )) : 
             <h3>No Evaluations Yet!</h3>}
             </div>

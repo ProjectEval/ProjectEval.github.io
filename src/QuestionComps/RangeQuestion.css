@@ -11,9 +11,15 @@
     gap: 10px;
     width: 90%;
     overflow: scroll;
+    height: 100%;
 }
 
 .Buttons::before, .Buttons::after{
     content: '';
     margin: auto;
+}
+
+.CommentElmt{
+    width: 90%;
+    height: 100px;
 }

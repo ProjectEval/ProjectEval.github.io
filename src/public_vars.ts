@@ -1,1 +1,1 @@
-export const ISLOCAL = false
+export const ISLOCAL = true

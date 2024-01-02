@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import "./search_bar.css"
 
 import TrashIcon from '../assets/trash.png'
-import { getStudentData, getTeacherData, isTeacher } from '../API/database';
-import { Student, Teacher } from '../firebase_types';
+import { getStudentData, getTeacherData, checkIfTeacher } from '../API/database';
+import { Student, Teacher } from '../CustomTypes/firebase_types';
 
 
 type SearchBarProps<T> = {
@@ -27,11 +27,11 @@ function SearchBar<T>({name, content, updateContent, defaultAddedContent, curren
 
   useEffect(() => {
     const getData = async () => {
-      console.log(currentUserId)
+      // console.log(currentUserId)
       if(currentUserId == ""){
         return
       }
-      const teacher = await isTeacher(currentUserId)
+      const teacher = await checkIfTeacher(currentUserId)
 
 
       if (teacher){
@@ -49,14 +49,14 @@ function SearchBar<T>({name, content, updateContent, defaultAddedContent, curren
   useEffect(() => {
     if(defaultAddedContent != undefined){
       setAddedContent(defaultAddedContent)
-      console.log("Set added content")
+      // console.log("Set added content")
     }
   },[defaultAddedContent])
   
 
   useEffect(() => {
-    console.log(search)
-    console.log(addedContent)
+    // console.log(search)
+    // console.log(addedContent)
     const addedContentNames: string[] = addedContent.map((content) => content.name)
     //Filter out any object that has name in addedContent that includes search
     let searchResults: T[] = content.filter(
@@ -70,7 +70,7 @@ function SearchBar<T>({name, content, updateContent, defaultAddedContent, curren
       }
     }
       
-    console.log(searchResults)
+    // console.log(searchResults)
     setSearchResults(searchResults)
   }, [search, content, addedContent])
 

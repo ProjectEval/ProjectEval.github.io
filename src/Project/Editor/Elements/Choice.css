@@ -16,3 +16,11 @@
     width: 15px;
     cursor: pointer;
 }
+
+.ChoiceInput{
+    width: 100%;
+}
+
+.ChoiceText{
+    width: fit-content;
+}

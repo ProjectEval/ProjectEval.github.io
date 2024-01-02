@@ -14,7 +14,7 @@ function Choice({handleChangeChoice, index, value, removeChoice}: ChoiceProp) {
     <>
         <div className='Choice'>
             <label htmlFor="Choice" className='ChoiceText'>Choice #{index + 1}</label>
-            <input type="text" name="Choice" value={value} onChange={(e) =>  {
+            <input type="text" name="Choice" className="ChoiceInput" value={value} onChange={(e) =>  {
                 handleChangeChoice(e.target.value)
             }} />
             <img src={Trash} alt="delete" className='RemoveChoice' onClick={removeChoice}/>

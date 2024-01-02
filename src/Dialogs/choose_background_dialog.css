@@ -1,0 +1,22 @@
+.Backgrounds{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+    width: 100%;
+    gap: 10px;
+    flex-wrap: wrap;
+    overflow: scroll;
+
+}
+
+.chooseBackground{
+    width: 60%;
+    height: 85%;
+    overflow: hidden;
+}
+
+.CloseBackgroundChooser{
+    /* padding-bottom: 10px; */
+}

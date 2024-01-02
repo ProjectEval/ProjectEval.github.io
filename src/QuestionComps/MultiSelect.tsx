@@ -1,9 +1,9 @@
 import Select from './Select'
 import './MultiSelect.css'
-import { MultiSelectAnswer, QuestionProps } from './QuestionTypes'
+import { MultiSelectAnswer, QuestionProps } from '../CustomTypes/QuestionTypes'
 
 
-function MultiSelect({question, updateEval, getEval, submission} :QuestionProps<MultiSelectAnswer>) {
+function MultiSelect({question, updateEval, getEval, submission, updateEvalComment} :QuestionProps<MultiSelectAnswer>) {
   function handleAddChoice(choice: string){
     if(getEval!().value == ""){
       updateEval(choice)
@@ -27,6 +27,12 @@ function MultiSelect({question, updateEval, getEval, submission} :QuestionProps<
                 <Select text={text} handleAddChoice={handleAddChoice} handleRemoveChoice={handleRemoveChoice} selectedValue={submission.value as string}/>
             ))}
         </div>
+        <br />
+        {question.hasComment && <><label htmlFor="">Comment: </label>
+
+                <textarea name="" className="CommentElmt" value={submission.comment} onChange={(e) => {
+                    updateEvalComment(e.target.value)
+                }} ></textarea></>}
       </div>
       
     </>

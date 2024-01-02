@@ -11,7 +11,10 @@ async function checkLogin() {
     window.location.href = window.location.origin + '/Login/'
   }
 }
+(async () => {
   await checkLogin()
+})()
+
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

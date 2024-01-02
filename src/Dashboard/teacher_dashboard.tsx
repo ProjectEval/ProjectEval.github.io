@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import "./teacher_dashboard.css"
-import { Class, Student, Teacher } from '../firebase_types'
+import { Class, Student, Teacher } from '../CustomTypes/firebase_types'
 import { checkIfClassNameTaken, createClass, deleteClass, getStudents, getTeachers, getTeachersClasses } from '../API/database'
 import ClassTile from './class_tile'
 import PlusIcon from '../assets/plus.png'
 import TrashIcon from '../assets/trash.png'
 import PlusCircleIcon from '../assets/plus_circle.png'
-import SearchBar from './search_bar'
+import SearchBar from '../Components/search_bar'
 import CloseIcon from '../assets/close.png'
 import { signOutUser } from '../API/auth'
-import ErrorDialog from '../error_dialog'
+import InfoDialog from '../Dialogs/info_dialog'
 
 
 type TeacherDashboardProps = {
@@ -30,13 +30,16 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
   const [addedTeachers, setAddedTeachers] = useState<Teacher[]>([])
   const [className, setClassName] = useState<string>("")
 
-
+  const [background, setBackground] = useState<"RedPolygon" | "FieryPolygon" | "Hex">("Hex")
   const [students, setStudents] = useState<Student[]>([])
   
   const [addedStudents, setAddedStudents] = useState<Student[]>([])
 
   useEffect(() => {
-    
+    // Generate random background
+    const backgrounds: ("RedPolygon" | "FieryPolygon" | "Hex")[] = ["RedPolygon", "FieryPolygon", "Hex"]
+    const rand: number = Math.floor(Math.random() * backgrounds.length)
+    setBackground(backgrounds[rand])
     fetchClasses()
     console.log(classes)
   }, [])
@@ -83,7 +86,7 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
 
   return (
     <>
-      <div className='Center'>
+      <div className={'Center ' + background}>
         <h2 className='Title'>Teacher Classes</h2>
         <img src={PlusIcon} alt="add class" className='PlusIcon' onClick={() => {
           modalRef.current?.showModal()
@@ -121,7 +124,7 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
           <button type="button" onClick={handleCreateClass}>Create Class</button>
         </form>
       </dialog>
-      <ErrorDialog error={error} errorTitle={errorTitle} errorModalRef={errorModalRef}/>
+      <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef}/>
     </>
   )
 }

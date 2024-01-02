@@ -23,11 +23,13 @@
 }
 
 .EditIcon{
-    position: absolute;
-    top: 15px;
-    right: 20px;
+    width: 30px;
     cursor: pointer;
-    width: 25px;
+}
+
+.EditProjDialog{
+    width: 40%;
+
 }
 
 .BackArrow{
@@ -43,4 +45,23 @@
     position: absolute;
     top: 15px;
     right: 20px;
+}
+
+.TeacherIcons{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+}
+
+.CopyIcon{
+    width: 25px;
+    cursor: pointer;
+}
+
+.EditSides{
+    display: flex;
+    gap: 12px;
 }

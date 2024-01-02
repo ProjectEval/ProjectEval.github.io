@@ -3,3 +3,8 @@
     flex-direction: column;
     gap: 5px;
 }
+
+.CommentElmt{
+    width: 90%;
+    height: 100px;
+}

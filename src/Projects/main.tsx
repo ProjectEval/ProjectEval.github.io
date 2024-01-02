@@ -12,7 +12,10 @@ async function checkLogin() {
   }
 }
 
+(async () => {
   await checkLogin()
+})()
+
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

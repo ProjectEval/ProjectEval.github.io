@@ -1,10 +1,12 @@
-import { Questions } from "./QuestionComps/QuestionTypes";
+import { Questions } from "./QuestionTypes";
 
 export type Class = {
     name: string;
     students: string[];
     id: string;
     teachers: string[];
+    background: string;
+    backgroundColor: string;
 }
 
 export type ClassLocal = {
@@ -13,7 +15,10 @@ export type ClassLocal = {
     id: string;
     teachers: string[];
     projects: Record<string, Project>
+    background: string;
+    backgroundColor: string;
 }
+
 
 export type Student = {
     name: string;
@@ -33,6 +38,10 @@ export type Project = {
     students: string[];
     eval_template: Questions;
     evals: Eval[];
+    background: string;
+    backgroundColor: string;
+    cardColor: string;
+    evalBackgroundColor: string;
 }
 
 export type Eval = {

@@ -1,5 +1,7 @@
 .Login{
     border: white solid 1px;
+    /* Add slight background color */
+    font-size: large;
 }
 
 .Title{

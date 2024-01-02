@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import "./eval_student.css"
 import RangeQuestion from '../../QuestionComps/RangeQuestion'
-import { Answer, FreeResponseAnswer, MultiChoiceAnswer, MultiSelectAnswer, Question, Questions, RangeAnswer } from '../../QuestionComps/QuestionTypes'
+import { Answer, FreeResponseAnswer, MultiChoiceAnswer, MultiSelectAnswer, Question, Questions, RangeAnswer } from '../../CustomTypes/QuestionTypes'
 import MultiChoice from '../../QuestionComps/MultiChoice'
 import MultiSelect from '../../QuestionComps/MultiSelect'
 import FreeResponse from '../../QuestionComps/FreeResponse'
-import { addStudentEval, getPastEvals, getProjectEvalTemplate } from '../../API/database'
-import { Eval, EvalSubmission } from '../../firebase_types'
+import { addStudentEval, getPastEvals, getProjectData, getProjectEvalTemplate } from '../../API/database'
+import { Eval, EvalSubmission } from '../../CustomTypes/firebase_types'
 import { getUserId } from '../../API/auth'
 import BackArrow from "../../assets/back_arrow.png"
 
@@ -20,6 +20,8 @@ function EvalStudent() {
     const [evalRes, setEvalRes] = useState<EvalSubmission[]>([])
     const completeEvalRef = useRef<HTMLDialogElement>(null)
     const incompleteEvalRef = useRef<HTMLDialogElement>(null)
+    const [background, setBackground] = useState<string>("")
+    const [evalBackgroundColor, setEvalBgColor] = useState<string>("")
     const [evalQs, setQs]  = useState<Questions>([{Question: "How much did they contribute?", Answer: {Type: "Range", Min: 1, MinTitle: "Not at all", Max: 5, MaxTitle: "Did Everything"}, id: "contribution", hasComment: true}, {Question: "What did they help with?", Answer: {Type: "MultiChoice", Choices: ["Slides", "Research", "Both"]}, id: "help", hasComment: true}, {Question: "What did they do well?", Answer: {Type: "MultiSelect", Choices: ["Teamwork", "Efficiency", "Creativity", "Nothing"]}, id: "well", hasComment: true}, {Question: "Any other comments?" , Answer: {Type: "FreeResponse"},hasComment: false, id:"comments"}])
     useEffect(() => {
        async function fetchData(){
@@ -69,6 +71,9 @@ function EvalStudent() {
             })
             console.log(fillerEvalRes)
             setEvalRes(fillerEvalRes)
+            const projectData = await getProjectData(classId, projectId)
+            setBackground(projectData.background)
+            setEvalBgColor(projectData.evalBackgroundColor)
             
             
         }
@@ -160,7 +165,7 @@ function EvalStudent() {
     
   return (
     <>
-        <div className='Center'>
+        <div className={'Center ' + background} style={{backgroundColor: evalBackgroundColor}}>
             <h2 className='Title'>{name}</h2>
             <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
                  const oldUrl = new URL(window.location.href)
@@ -171,16 +176,11 @@ function EvalStudent() {
             <div className='EvalQuestions'>
             {evalRes.length > 0 ? evalQs.map((question: Question<Answer>, index: number) => (
                 <>
-                {question.Answer.Type == "Range" ? <RangeQuestion key={question.id} question={question as Question<RangeAnswer>} updateEval={updateEval(index)} submission={evalRes[index]}/> 
-                : question.Answer.Type == "MultiChoice" ? <MultiChoice key={question.id} question={question as Question<MultiChoiceAnswer>} updateEval={updateEval(index)} submission={evalRes[index]}/> 
-                : question.Answer.Type == "MultiSelect" ? <MultiSelect key={question.id} question={question as Question<MultiSelectAnswer>} updateEval={updateEval(index)} getEval={getEval(index)} submission={evalRes[index]}/>
-                : question.Answer.Type == "FreeResponse" ? <FreeResponse key={question.id} question={question as Question<FreeResponseAnswer>} updateEval={updateEval(index)} submission={evalRes[index]}/>
+                {question.Answer.Type == "Range" ? <RangeQuestion key={question.id} question={question as Question<RangeAnswer>} updateEval={updateEval(index)} submission={evalRes[index]} updateEvalComment={updateEvalComment(index)}/> 
+                : question.Answer.Type == "MultiChoice" ? <MultiChoice key={question.id} question={question as Question<MultiChoiceAnswer>} updateEval={updateEval(index)} submission={evalRes[index]} updateEvalComment={updateEvalComment(index)}/> 
+                : question.Answer.Type == "MultiSelect" ? <MultiSelect key={question.id} question={question as Question<MultiSelectAnswer>} updateEval={updateEval(index)} getEval={getEval(index)} submission={evalRes[index]} updateEvalComment={updateEvalComment(index)}/>
+                : question.Answer.Type == "FreeResponse" ? <FreeResponse key={question.id} question={question as Question<FreeResponseAnswer>} updateEval={updateEval(index)} submission={evalRes[index]} updateEvalComment={updateEvalComment(index)}/>
                 : null}
-                { question.hasComment ? <><label htmlFor="">Comment: </label>
-                <br />
-                <textarea name="" value={evalRes[index].comment} onChange={(e) => {
-                    updateEvalComment(index)(e.target.value)
-                }} cols={20} rows={5}></textarea> </>: null}
                 </>
             )) : null}
             </div>

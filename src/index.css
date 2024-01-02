@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* background-color: #242424; */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,11 +15,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #3ed4e6;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #1ae8fe;
 }
 
 body {
@@ -28,6 +28,160 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  
+  /* background-color: #242424; */
+  color: white;
+}
+body:has(.Center.Aztec){
+  background-image: url("./assets/backgrounds/aztec_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.AztecPattern){
+  background-image: url("./assets/backgrounds/aztec_pattern_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Inca){
+  background-image: url("./assets/backgrounds/inca_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Science){
+  background-image: url("./assets/backgrounds/science_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Icon){
+  background-image: url("./assets/backgrounds/icon_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Egypt){
+  background-image: url("./assets/backgrounds/egypt_background.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Space){
+  background-image: url("./assets/backgrounds/space_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Planets){
+  background-image: url("./assets/backgrounds/planets_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Wave){
+  background-image: url("./assets/backgrounds/wave_background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.BoxFade){
+  background-image: url("./assets/backgrounds/blocky_fade_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.SeaMap){
+  background-image: url("./assets/backgrounds/sea_map_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.ShipMap){
+  background-image: url("./assets/backgrounds/ship_map_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Map){
+  background-image: url("./assets/backgrounds/map_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.English){
+  background-image: url("./assets/backgrounds/english_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Book){
+  background-image: url("./assets/backgrounds/book_background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.Hex){
+  background-image: url("./assets/backgrounds/hex_mountain_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.History){
+  background-image: url("./assets/backgrounds/history_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.RedPolygon){
+  background-image: url("./assets/backgrounds/red_polygon_backgound.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body:has(.Center.FieryPolygon){
+  background-image: url("./assets/backgrounds/fiery_polygon_background.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 h1 {
@@ -81,11 +235,13 @@ button:focus-visible {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background-color: #21212152;
 }
 
 input {
   border-radius: 5px;
   border: 1px solid transparent;
+  height: 20px;
 }
 
 input:focus, input:focus-visible {
@@ -100,7 +256,7 @@ dialog{
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
-  cursor: pointer;
+
   transition: border-color 0.25s;
 }
 

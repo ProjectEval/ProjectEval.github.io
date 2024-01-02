@@ -22,3 +22,18 @@
     top: 15px;
     right: 20px;
 }
+
+.ResQuestion{
+    width: 80%;
+}
+
+.EvalElmt{
+    width: 80%;
+}
+.BackArrow{
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    cursor: pointer;
+    width: 30px;
+}

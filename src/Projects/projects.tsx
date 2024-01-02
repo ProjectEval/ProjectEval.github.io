@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import "./projects.css"
-import { Project, Student, Teacher } from "../firebase_types";
-import { checkIfProjectNameTaken, createProject, deleteProject, editClass, getClassData, getClassProjects, getStudentProjects, getStudents, getStudentsInClass, getTeachers, getTeachersData } from "../API/database";
+import { Project, Student, Teacher } from "../CustomTypes/firebase_types";
+import { checkIfProjectNameTaken, checkIfTeacher, createProject, deleteProject, editClass, getClassData, getClassProjects, getStudentProjects, getStudents, getStudentsInClass, getTeachers, getTeachersData } from "../API/database";
 import ProjectTile from "./project_tile";
 import PlusIcon from '../assets/plus.png'
-import SearchBar from "../Dashboard/search_bar";
-import { get } from "firebase/database";
+import SearchBar from "../Components/search_bar";
+import { get, set } from "firebase/database";
 import { getUserId } from "../API/auth";
 import BackArrow from "../assets/back_arrow.png"
 import EditIcon from "../assets/square_pencil.png"
 import CloseIcon from "../assets/close.png"
-import ErrorDialog from "../error_dialog";
+import InfoDialog from "../Dialogs/info_dialog";
 import LinkIcon from "../assets/link.png"
+import ChooseBackgroundDialog from "../Dialogs/choose_background_dialog";
+import CloseWarningDialog from "../Dialogs/close_warning_dialog";
+import ChooseColorDialog from "../Dialogs/choose_colors_dialog";
 
 
 function Projects() {
@@ -28,7 +31,10 @@ function Projects() {
     const editClassRef = useRef<HTMLDialogElement>(null)
     const [editClassName, setEditClassName] = useState<string>("")
     const [userId, setUserId] = useState<string>("")
-
+    const [editBackground, setEditBackground] = useState<string>("")
+    const [backgroundColor, setBackgroundColor] = useState<string>("")
+    const chooseBackgroundRef = useRef<HTMLDialogElement>(null)
+    const chooseColorRef = useRef<HTMLDialogElement>(null)
 
     const [projectName, setProjectName] = useState<string>("")
   
@@ -39,6 +45,9 @@ function Projects() {
     const errorModalRef = useRef<HTMLDialogElement>(null)
     const [error, setError] = useState<string>("")
     const [errorTitle, setErrorTitle] = useState<string>("")
+
+    const [background, setBackground] = useState<string>("")
+    const closeWarningRef = useRef<HTMLDialogElement>(null)
 
     useEffect(() => {
         
@@ -60,21 +69,22 @@ function Projects() {
         const classData = await getClassData(classIds)
         setClassName(classData.name)
         setEditClassName(classData.name)
+        setBackground(classData.background)
+        setEditBackground(classData.background)
+        setBackgroundColor(classData.backgroundColor)
         const teachers: Teacher[] = await getTeachersData(classData.teachers)
         //Filter out current teacher
         const filteredTeachers: Teacher[] = teachers.filter((teacher) => teacher.id != userId)
         setTeachers(filteredTeachers)
         console.log(teachers)
-        const userType = localStorage.getItem("userType")
-        let isTeacher: boolean = false
-        if (userType == "Teacher"){
-            setIsTeacher(true)
-            isTeacher = true
-        }
+        const teacher = await checkIfTeacher(userId)
+        // let isTeacher: boolean = false
+       
         let res = null
-        if(!isTeacher){
+        if(!teacher){
             res = await getStudentProjects(userId! as string, classIds)
         } else {
+          console.log("IS a teacher")
             res = await getClassProjects(classIds)
         }
         console.log(res)
@@ -105,8 +115,9 @@ function Projects() {
 
     const handleEditClass = async () => {
         const teachers: string[] = addedTeachers.map((teacher) => teacher.id)
+        teachers.push(userId)
         const students: string[] = classStudents.map((student) => student.id)
-        await editClass(classId, editClassName, students, teachers)
+        await editClass(classId, editClassName, students, teachers, background, backgroundColor)
     
         editClassRef.current?.close()
         fetchProjects()
@@ -119,7 +130,7 @@ function Projects() {
 
   return (
     <>
-     <div className='Center'>
+     <div className={'Center ' + background} style={{backgroundColor: backgroundColor}}>
         <h2 className='Title'>{className}</h2>
         <h3>Projects:</h3>
        {isTeacher ? <div className="TeacherIcons">
@@ -161,7 +172,7 @@ function Projects() {
           <br />
           
           <label htmlFor="">Students: </label>
-            <SearchBar<Student> name="Student" currentUserId={userId} content={students} updateContent={(content) => {
+            <SearchBar<Student> name="Student" currentUserId={userId} content={classStudents} updateContent={(content) => {
               setAddedStudents(content)
             }}/>
           <br />
@@ -171,7 +182,7 @@ function Projects() {
       <dialog ref={editClassRef} className="EditClassDialog">
         <h2>Edit Class</h2>
         <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
-          editClassRef.current?.close()
+          closeWarningRef.current?.showModal()
         }}/>
         <form>
           <label htmlFor="className">Class Name:</label>
@@ -196,12 +207,25 @@ function Projects() {
             </div>
             
           </div>
-         
           <br />
-          <button type="button" onClick={handleEditClass}>Edit Class</button>
+          <button type="button" onClick={() => {
+            chooseBackgroundRef.current?.showModal()
+          }}>Edit Background</button>
+         <br />
+         <br />
+          <button type="button" onClick={() => {
+            chooseColorRef.current?.showModal()
+          }}>Edit Color</button>
+          <br />
+          <br />
+          <button type="button" onClick={handleEditClass}>Save Class</button>
         </form>
       </dialog>
-      <ErrorDialog error={error} errorTitle={errorTitle} errorModalRef={errorModalRef}/>
+      
+      <CloseWarningDialog closeWarningRef={closeWarningRef} connectedRef={editClassRef}/>
+      <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef}/>
+      <ChooseBackgroundDialog setBackground={setBackground} backgroundRef={chooseBackgroundRef} currentBackground={background}/>
+      <ChooseColorDialog setBgColor={setBackgroundColor} colorRef={chooseColorRef} currentBgColor={backgroundColor} isProject={false}/>
     </>
   )
 }

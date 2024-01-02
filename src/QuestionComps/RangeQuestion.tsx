@@ -1,11 +1,11 @@
 
 
-import { QuestionProps, RangeAnswer } from './QuestionTypes';
+import { QuestionProps, RangeAnswer } from '../CustomTypes/QuestionTypes';
 import RangeBtn from './RangeBtn';
 import './RangeQuestion.css'
 
 
-function RangeQuestion({question, updateEval, submission}:QuestionProps<RangeAnswer>) {
+function RangeQuestion({question, updateEval, submission, updateEvalComment}:QuestionProps<RangeAnswer>) {
 
   function handleChangeChoice(choice: number){
     updateEval(choice)
@@ -22,6 +22,11 @@ function RangeQuestion({question, updateEval, submission}:QuestionProps<RangeAns
             ))}
             <RangeBtn text={question.Answer.MaxTitle} value={question.Answer.Max} handleChangeChoice={handleChangeChoice} selectedValue={submission.value as number}/>
         </div>
+        {question.hasComment && <><label htmlFor="">Comment: </label>
+                
+                <textarea name="" className="CommentElmt" value={submission.comment} onChange={(e) => {
+                    updateEvalComment(e.target.value)
+                }} ></textarea></>}
       </div>
       
     </>
