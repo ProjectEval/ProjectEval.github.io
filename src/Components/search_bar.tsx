@@ -6,11 +6,12 @@ import { getStudentData, getTeacherData, checkIfTeacher } from '../API/database'
 import { Student, Teacher } from '../CustomTypes/firebase_types';
 
 
-type SearchBarProps<T> = {
+
+type SearchBarProps<User> = {
    name: string;
-   content: T[];
-   updateContent: (content: T[]) => void;
-   defaultAddedContent?: T[]
+   content: User[];
+   updateContent: (content: User[]) => void;
+   defaultAddedContent?: User[]
    currentUserId: string
 }
 

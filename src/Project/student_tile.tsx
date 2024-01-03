@@ -1,6 +1,6 @@
 import "./student_tile.css"
 import EvalIcon from "./eval_icon.png"
-import PersonIcon from "./person_icon.png"
+import PersonIcon from "../assets/person_icon.png"
 import { useEffect, useState } from "react"
 import { getUserId } from "../API/auth"
 import { checkIfTeacher } from "../API/database"
@@ -11,9 +11,10 @@ type StudentTileProps = {
     projectId: string
     classId: string
     projectName: string
+    groupId?: string
 }
 
-function StudentTile({name, id, projectId, classId, projectName}: StudentTileProps) {
+function StudentTile({name, id, projectId, classId, groupId}: StudentTileProps) {
   const [isUser, setIsUser] = useState<boolean>(false)
 
   useEffect(() => {
@@ -35,6 +36,9 @@ function StudentTile({name, id, projectId, classId, projectName}: StudentTilePro
             url.searchParams.set("projectId", projectId)
             url.searchParams.set("studentId", id)
             url.searchParams.set("classId", classId)
+            if(groupId != undefined){
+              url.searchParams.set("groupId", groupId)
+            }
             window.location.href = url.origin + "/Project/StudentProfile/" + url.search
         }}/> :  <img src={EvalIcon} alt="evaluate student" className="EvalIcon" onClick={() => {
             //Create url with params

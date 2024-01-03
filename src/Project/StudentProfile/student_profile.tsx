@@ -27,6 +27,7 @@ function StudentProfile() {
     const [background, setBackground] = useState<string>("")
     const [evalBackgroundColor, setEvalBgColor] = useState<string>("")
     const [cardColor, setCardColor] = useState<string>("")
+    const [groupId, setGroupId] = useState<string>("")
 
     useEffect(() => {
        async function fetchData(){
@@ -44,6 +45,9 @@ function StudentProfile() {
             const projectId = params.get("projectId")!
             const classId = params.get("classId")!
             const studentId = params.get("studentId")!
+            if(params.has("groupId")){
+                setGroupId(params.get("groupId")!)
+            }
             setProjID(projectId)
             setClassId(classId)
             setStudentId(params.get("studentId")!)
@@ -93,10 +97,14 @@ function StudentProfile() {
         {student != undefined ? <div className={'Center ' + background} style={{backgroundColor: evalBackgroundColor}}>
             <h2 className='Title'>{isCurrentStudent ? "Your Profile" : student.name + "'s Profile"}</h2>
             <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
-          const url = new URL(window.location.href)     
-          url.searchParams.delete("studentId")
-         
-          window.location.href = url.origin + "/Project/" + url.search 
+                const url = new URL(window.location.href)     
+                url.searchParams.delete("studentId")
+                if(groupId != ""){
+                    window.location.href = url.origin + "/Group/" + url.search 
+                } else {
+                    window.location.href = url.origin + "/Project/" + url.search 
+                }
+               
         }}/>
             <div className='Results'>
             {evalSubmissions.length > 0 ? matchedQSubs.map((q) => (

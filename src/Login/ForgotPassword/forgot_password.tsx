@@ -13,9 +13,14 @@ function ForgotPassword() {
     const [error, setError] = useState<string>("")
     const [errorTitle, setErrorTitle] = useState<string>("")
     const [onClose, setOnClose] = useState<() => void>(() => {})
+    const [background, setBackground] = useState<"RedPolygon" | "FieryPolygon" | "Hex">("Hex")
+
 
 
     const onError = (error: string, errorTitle: string) => {
+      const backgrounds: ("RedPolygon" | "FieryPolygon" | "Hex")[] = ["RedPolygon", "FieryPolygon", "Hex"]
+      const rand: number = Math.floor(Math.random() * backgrounds.length)
+      setBackground(backgrounds[rand])
       setSendingLink(false)
         setError(error)
         setErrorTitle(errorTitle)
@@ -37,7 +42,7 @@ function ForgotPassword() {
     }
   return (
     <>
-      <div className='Center'>
+      <div className={'Center ' + background} >
         <h2 className='Title'>Forgot Password</h2>
         <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
           window.location.href = "/Login/"

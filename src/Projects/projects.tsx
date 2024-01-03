@@ -5,7 +5,6 @@ import { checkIfProjectNameTaken, checkIfTeacher, createProject, deleteProject, 
 import ProjectTile from "./project_tile";
 import PlusIcon from '../assets/plus.png'
 import SearchBar from "../Components/search_bar";
-import { get, set } from "firebase/database";
 import { getUserId } from "../API/auth";
 import BackArrow from "../assets/back_arrow.png"
 import EditIcon from "../assets/square_pencil.png"
@@ -25,7 +24,6 @@ function Projects() {
     const [teachers, setTeachers] = useState<Teacher[]>([])
     const [allTeachers, setAllTeachers] = useState<Teacher[]>([])
     const [addedTeachers, setAddedTeachers] = useState<Teacher[]>([])
-    const [allStudents, setAllStudents] = useState<Student[]>([])
     const [classStudents, setClassStudents] = useState<Student[]>([])
     const modalRef = useRef<HTMLDialogElement>(null)
     const editClassRef = useRef<HTMLDialogElement>(null)
@@ -35,13 +33,8 @@ function Projects() {
     const [backgroundColor, setBackgroundColor] = useState<string>("")
     const chooseBackgroundRef = useRef<HTMLDialogElement>(null)
     const chooseColorRef = useRef<HTMLDialogElement>(null)
-
     const [projectName, setProjectName] = useState<string>("")
-  
-  
     const [students, setStudents] = useState<Student[]>([])
-    
-    const [addedStudents, setAddedStudents] = useState<Student[]>([])
     const errorModalRef = useRef<HTMLDialogElement>(null)
     const [error, setError] = useState<string>("")
     const [errorTitle, setErrorTitle] = useState<string>("")
@@ -52,7 +45,7 @@ function Projects() {
     useEffect(() => {
         
         fetchProjects()
-        console.log(projects)
+        console.log("Fetched Projects")
     }, [])
 
     async function fetchProjects() {
@@ -77,7 +70,8 @@ function Projects() {
         const filteredTeachers: Teacher[] = teachers.filter((teacher) => teacher.id != userId)
         setTeachers(filteredTeachers)
         console.log(teachers)
-        const teacher = await checkIfTeacher(userId)
+        const teacher = await checkIfTeacher(userId as string)
+        setIsTeacher(teacher)
         // let isTeacher: boolean = false
        
         let res = null
@@ -106,8 +100,8 @@ function Projects() {
           errorModalRef.current?.showModal()
           return
         }
-        const students: string[] = addedStudents.map((student) => student.id)
-        await createProject(projectName, students, classId)
+
+        await createProject(projectName, classId)
     
         modalRef.current?.close()
         fetchProjects()
@@ -169,12 +163,7 @@ function Projects() {
           <input type="text" name="projectName" id="projectName" value={projectName} onChange={(e) => {
             setProjectName(e.target.value)
           }}/>
-          <br />
-          
-          <label htmlFor="">Students: </label>
-            <SearchBar<Student> name="Student" currentUserId={userId} content={classStudents} updateContent={(content) => {
-              setAddedStudents(content)
-            }}/>
+    
           <br />
           <button type="button" onClick={handleCreateProject}>Create Project</button>
         </form>

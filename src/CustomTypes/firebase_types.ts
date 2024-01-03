@@ -17,6 +17,7 @@ export type ClassLocal = {
     projects: Record<string, Project>
     background: string;
     backgroundColor: string;
+
 }
 
 
@@ -35,13 +36,13 @@ export type Teacher = {
 export type Project = {
     id: string;
     name: string;
-    students: string[];
     eval_template: Questions;
     evals: Eval[];
     background: string;
     backgroundColor: string;
     cardColor: string;
     evalBackgroundColor: string;
+    groups: Record<string, Group>
 }
 
 export type Eval = {
@@ -54,4 +55,10 @@ export type EvalSubmission = {
     id: string;
     value: string | number;
     comment?: string;
+}
+
+export type Group = {
+    name: string
+    students: string[]
+    id: string
 }

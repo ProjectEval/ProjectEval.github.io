@@ -27,6 +27,7 @@ export default defineConfig({
         forgot_password: resolve(root, 'Login','ForgotPassword', 'index.html'),
         reset_password: resolve(root, 'Login','ResetPassword', 'index.html'),
         join_class: resolve(root, 'JoinClass', 'index.html'),
+        group: resolve(root, "Group", "index.html")
 
 
       }

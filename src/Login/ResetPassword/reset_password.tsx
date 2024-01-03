@@ -15,8 +15,12 @@ function ResetPassword() {
     const [error, setError] = useState<string>("")
     const [errorTitle, setErrorTitle] = useState<string>("")
     const [onClose, setOnClose] = useState<() => void>(() => {})
+    const [background, setBackground] = useState<"RedPolygon" | "FieryPolygon" | "Hex">("Hex")
 
     useEffect(() => {
+      const backgrounds: ("RedPolygon" | "FieryPolygon" | "Hex")[] = ["RedPolygon", "FieryPolygon", "Hex"]
+      const rand: number = Math.floor(Math.random() * backgrounds.length)
+      setBackground(backgrounds[rand])
       const url: string = window.location.search
       const params: URLSearchParams = new URLSearchParams(url)
 
@@ -48,7 +52,7 @@ function ResetPassword() {
     }
   return (
     <>
-      <div className='Center'>
+      <div className={'Center ' + background}>
         <h2 className='Title'>Forgot Password</h2>
         <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
           window.location.href = "/Login/"
