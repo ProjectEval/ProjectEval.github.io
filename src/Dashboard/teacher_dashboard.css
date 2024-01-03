@@ -6,9 +6,7 @@
 }
 
 .PlusIcon{
-    position: absolute;
-    top: 15px;
-    right: 20px;
+
     cursor: pointer;
 }
 
@@ -17,6 +15,21 @@
     flex-direction: row;
     align-items: top;
     gap: 10px;
+}
+
+.Icons{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.SettingsIcon{
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+
 }
 
 .addTeacherBtn{
@@ -133,4 +146,8 @@
     position: absolute;
     top: 15px;
     right: 20px;
+}
+
+.SettingsDialog{
+    width: 20%;
 }

@@ -1,15 +1,15 @@
 import "./group_tile.css"
-import { useEffect, useState } from "react"
-import { getUserId } from "../API/auth"
+import TrashIcon from '../assets/trash.png'
 
 type GroupTileProps = {
     name: string
     groupId: string
     projectId: string
     classId: string
+    deleteGroup: (groupId: string) => void
 }
 
-function GroupTile({name, projectId, classId, groupId}: GroupTileProps) {
+function GroupTile({name, projectId, classId, groupId, deleteGroup}: GroupTileProps) {
 
 
  
@@ -25,7 +25,10 @@ function GroupTile({name, projectId, classId, groupId}: GroupTileProps) {
                 window.location.href = url.origin + "/Group/" + url.search
       }}>
         <h2 className="GroupName">{name}</h2>
-       
+       <img src={TrashIcon} alt="delete group" className="GroupTrashIcon" onClick={(e) => {
+        e.stopPropagation()
+        deleteGroup(groupId)
+       }}/>
       </div>
       
     </>

@@ -4,11 +4,13 @@ import Plus from "../../assets/plus_circle.png"
 import FreeResponseElmt from './Elements/FreeResponseElmt'
 import { Answer, Question, Questions } from '../../CustomTypes/QuestionTypes'
 import MultiChoiceElmt from './Elements/MultiChoiceElmt'
-import { createProjectEvalTemplate, getProjectData } from '../../API/database'
+import { createProjectEvalTemplate, getProjectData, getTeacherData, saveDefaultTemplate } from '../../API/database'
 import MultiSelectElmt from './Elements/MultiSelectElmt'
 import CloseIcon from "../../assets/close.png"
 import RangeElmt from './Elements/RangeElmt'
 import BackArrow from "../../assets/back_arrow.png"
+import { getUserId } from '../../API/auth'
+import InfoDialog from '../../Dialogs/info_dialog'
 
 
 function Editor() {
@@ -17,11 +19,28 @@ function Editor() {
   const [classId, setClassId] = useState<string>("")
   const [projectId, setProjectId] = useState<string>("")
   const [background, setBackground] = useState<string>("")
+  const [userId, setUserId] = useState<string>("")
+  const [edittingDefault, setEdittingDefault] = useState<boolean>(false)
+  const [info, setInfo] = useState<string>("")
+  const [infoTitle, setInfoTitle] = useState<string>("")
+  const infoModalRef = useRef<HTMLDialogElement>(null)
 
   useEffect(()=>{
     (async () => {
       const url: string = window.location.search
       const params: URLSearchParams = new URLSearchParams(url)
+      if(params.has("userId")){
+        setEdittingDefault(true)
+        const userId = params.get("userId")!
+        setUserId(userId)
+        const teacherData = await getTeacherData(userId)
+        setElmts(teacherData.default_eval_template)
+        if(!params.has("background")){
+          throw Error("missing background")
+        }
+        setBackground(params.get("background")!)
+        return
+      }
       if(!params.has("projectId")){
           throw Error("missing project id!")
       }
@@ -35,6 +54,8 @@ function Editor() {
       setBackground(projectData.background)
       setProjectId(projectId)
       setClassId(classId)
+      const userId = await getUserId()
+      setUserId(userId as string)
     })()
   }, [])
 
@@ -45,7 +66,7 @@ function Editor() {
 
   const removeElement = (index: string) => () => {
     // setElmts(elements.splice(index, 1))
-    const newElmts: Questions[] = elements.filter((value, i) => value.id != index)
+    const newElmts: Questions = elements.filter((value, i) => value.id != index)
     setElmts(newElmts)
   }
 
@@ -80,13 +101,34 @@ function Editor() {
     window.location.href = oldUrl.origin + "/Project/" + oldUrl.search
   }
 
+  const handleSaveDefaultTemplate = async () => {
+    await saveDefaultTemplate(userId, elements)
+    setInfoTitle("Saved as Default Template")
+    setInfo("Successfully saved teemplate as default")
+    infoModalRef.current?.showModal()
+  }
+
+  const handleLoadDefaultTemplate = async () => {
+    const teacherData = await getTeacherData(userId)
+    setElmts([...teacherData.default_eval_template])
+    setInfoTitle("Loaded Default Template")
+    setInfo("Successfully loaded default teemplate")
+    infoModalRef.current?.showModal()
+  }
+
   return (
     <>
       <div className={'Center ' + background}>
         <h2 className='Title'>Evaluation Editor</h2>
         <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
           const url = new URL(window.location.href)
-          window.location.href = url.origin + "/Project/" + url.search
+          if(edittingDefault){
+            url.searchParams.delete("userId")
+            window.location.href = url.origin + "/Dashboard/"
+          } else {
+            window.location.href = url.origin + "/Project/" + url.search
+          }
+         
         }}/>
         {elements.map((element: Question<Answer>, index: number) => (
             element.Answer.Type == "FreeResponse" ? <FreeResponseElmt key={element.id} handleRemoveElmt={removeElement(element.id)} element={element} handleUpdateElmt={updateQuestion(index)}/>
@@ -100,7 +142,11 @@ function Editor() {
             modalRef.current!.showModal()
         }}/>
         <br />
+        {!edittingDefault && <><button onClick={handleLoadDefaultTemplate}>Load Default Template</button>
+        <br />
         <button onClick={handleSaveTemplate}>Save Template</button>
+        <br /></>}
+        <button onClick={handleSaveDefaultTemplate}>Save as Default Template</button>
         <br />
       </div>
 
@@ -129,6 +175,7 @@ function Editor() {
             modalRef.current!.close()
         }}>Range</button>
       </dialog>
+      <InfoDialog Title={infoTitle} info={info} infoModalRef={infoModalRef}/>
     </>
   )
 }

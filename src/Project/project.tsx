@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import "./project.css"
 import { Group, Student } from "../CustomTypes/firebase_types";
-import { checkIfTeacher, copyProject, createGroup, editProject, getClassData, getProjectData, getProjectEvalTemplate, getProjectGroups, getStudentGroup, getStudentsData, getStudentsInClass, userInGroup } from "../API/database";
+import { checkIfTeacher, copyProject, createGroup, deleteGroup, editProject, getClassData, getProjectData, getProjectEvalTemplate, getProjectGroups, getStudentGroup, getStudentsData, getStudentsInClass, userInGroup } from "../API/database";
 import StudentTile from "./student_tile";
 import EditIcon from "../assets/square_pencil.png"
 import SearchBar from "../Components/search_bar";
@@ -131,6 +131,11 @@ function Project() {
       createGroupRef.current?.close()
     }
 
+    const handleDeleteGroup = async (groupId:string) => {
+      await deleteGroup(classId, projectId, groupId)
+      await fetchProjects()
+    }
+
   return (
     <>
      <div className={'Center ' + background} style={{backgroundColor: backgroundColor}}>
@@ -171,7 +176,7 @@ function Project() {
         <h3>Groups:</h3>
         <div className="Students">
             {groups.map((group) => (
-                <GroupTile key={group.id} name={group.name} groupId={group.id} projectId={projectId} classId={classId}/>
+                <GroupTile key={group.id} name={group.name} groupId={group.id} projectId={projectId} classId={classId} deleteGroup={handleDeleteGroup}/>
             ))}
         </div>
       </> }

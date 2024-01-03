@@ -4,8 +4,7 @@ import { Class, Student, Teacher } from '../CustomTypes/firebase_types'
 import { checkIfClassNameTaken, createClass, deleteClass, getStudents, getTeachers, getTeachersClasses } from '../API/database'
 import ClassTile from './class_tile'
 import PlusIcon from '../assets/plus.png'
-import TrashIcon from '../assets/trash.png'
-import PlusCircleIcon from '../assets/plus_circle.png'
+import GearIcon from '../assets/gear.png'
 import SearchBar from '../Components/search_bar'
 import CloseIcon from '../assets/close.png'
 import { signOutUser } from '../API/auth'
@@ -22,7 +21,7 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
 
 
   const [teachers, setTeachers] = useState<Teacher[]>([])
-
+  const settingsModalRef = useRef<HTMLDialogElement>(null)
   const modalRef = useRef<HTMLDialogElement>(null)
   const errorModalRef = useRef<HTMLDialogElement>(null)
   const [error, setError] = useState<string>("")
@@ -88,9 +87,16 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
     <>
       <div className={'Center ' + background}>
         <h2 className='Title'>Teacher Classes</h2>
-        <img src={PlusIcon} alt="add class" className='PlusIcon' onClick={() => {
-          modalRef.current?.showModal()
-        }}/>
+        <div className='Icons'>
+          <img src={PlusIcon} alt="add class" className='PlusIcon' onClick={() => {
+            modalRef.current?.showModal()
+          }}/>
+          <img src={GearIcon} alt="open account settings" className='SettingsIcon' onClick={() => {
+            settingsModalRef.current?.showModal()
+          }}/>
+        </div>
+       
+
         <div className='Classes'>
            {classes.map((teacherClass) => (
               <ClassTile key={teacherClass.name} name={teacherClass.name} id={teacherClass.id} isTeacher={true} deleteClass={handleDeleteClass(teacherClass.id)}/>
@@ -122,6 +128,20 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
             }}/>
           <br />
           <button type="button" onClick={handleCreateClass}>Create Class</button>
+        </form>
+      </dialog>
+      <dialog ref={settingsModalRef} className='SettingsDialog'>
+        <h2>Account Settings</h2>
+        <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
+          settingsModalRef.current?.close()
+        }}/>
+        <form>
+          <button type="button" onClick={() => {
+             const url = new URL(window.location.origin)     
+             url.searchParams.set("userId", id)
+             url.searchParams.set("background", background)
+             window.location.href = url.origin + "/Project/Editor/" + url.search
+          }}>Edit Default Template</button>
         </form>
       </dialog>
       <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef}/>

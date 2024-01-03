@@ -31,6 +31,7 @@ export type Teacher = {
     name: string;
     id: string;
     email: string;
+    default_eval_template: Questions
 }
 
 export type Project = {

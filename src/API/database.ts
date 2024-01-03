@@ -390,7 +390,8 @@ async function addTeacherDocLocal(name:string, email:string, id:string, onFinish
     localTeachers[id] = {
         name: name,
         email: email,
-        id: id
+        id: id,
+        default_eval_template: []
     }
     await saveFile("Teachers",JSON.stringify(localTeachers))
     onFinish()
@@ -400,7 +401,8 @@ async function addTeacherDocFB(name:string, email:string, id:string, onFinish: (
     await setDoc(doc(db, "Teachers", id), {
         name: name,
         email: email,
-        id: id
+        id: id,
+        default_eval_template: []
     })
     onFinish()
 }
@@ -469,11 +471,7 @@ function getTeachersLocal(): Teacher[]{
     const teachers: Teacher[] = []
     for (const key in localTeachers) {
         const teacherData = localTeachers[key]
-        teachers.push({
-            name: teacherData.name,
-            id: teacherData.id,
-            email: teacherData.email
-        })
+        teachers.push(teacherData)
     }
     return teachers
 }
@@ -487,7 +485,8 @@ async function getTeachersFB(): Promise<Teacher[]>{
         teachers.push({
             name: teacherData.name,
             id: teacherData.id,
-            email: teacherData.email
+            email: teacherData.email,
+            default_eval_template: teacherData.default_eval_template
         })
     })
     return teachers
@@ -709,7 +708,7 @@ function getTeacherDataLocal(teacherId: string): Teacher {
     if (teacherData) {
         return teacherData as Teacher
     }
-    return {name: "", id: "", email: ""}
+    return {name: "", id: "", email: "", default_eval_template: []}
 }
 
 async function getTeacherDataFB(teacherId: string): Promise<Teacher> {
@@ -719,7 +718,7 @@ async function getTeacherDataFB(teacherId: string): Promise<Teacher> {
     if (teacherData) {
         return teacherData as Teacher
     }
-    return {name: "", id: "", email: ""}
+    return {name: "", id: "", email: "", default_eval_template: []}
 }
 
 export async function getTeachersData(teacherIds: string[]): Promise<Teacher[]> {
@@ -1308,4 +1307,38 @@ async function editGroupFB(classId: string, projectId: string, groupId: string, 
         name: groupName,
         students: students,
     })
+}
+
+export async function saveDefaultTemplate(userId: string, template: Questions){
+    if(ISLOCAL){
+        await saveDefaultTemplateLocal(userId, template)
+        return
+    }
+    await saveDefaultTemplateFB(userId, template)
+}
+
+async function saveDefaultTemplateLocal(userId: string, template: Questions){
+    localTeachers[userId].default_eval_template = template
+    await saveFile("Teachers", JSON.stringify(localTeachers))
+}
+
+async function saveDefaultTemplateFB(userId: string, template: Questions){
+    await updateDoc(doc(db, "Teachers", userId), {default_eval_template: template})
+}
+
+export async function deleteGroup(classId: string, projectId: string, groupId: string){
+    if(ISLOCAL){
+        await deleteGroupLocal(classId, projectId, groupId)
+        return
+    }
+    await deleteGroupFB
+}
+
+async function deleteGroupLocal(classId: string, projectId: string, groupId: string){
+    delete localClasses[classId].projects[projectId].groups[groupId]
+    await saveFile("Classes", JSON.stringify(localClasses))
+}
+
+async function deleteGroupFB(classId: string, projectId: string, groupId: string){
+    await deleteDoc(doc(db, "Classes", classId, "Projects", projectId, "Groups", groupId))
 }
