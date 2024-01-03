@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom/client'
-import Dashboard from './dashboard.tsx'
+import TeacherDashboard from './teacher_dashboard.tsx'
 import '../index.css'
 
 import { getUserId } from '../API/auth.ts'
@@ -18,6 +18,6 @@ async function checkLogin() {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Dashboard />
+    <TeacherDashboard />
   </React.StrictMode>,
 )

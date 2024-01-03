@@ -19,6 +19,8 @@ export default defineConfig({
         index: resolve(root,  'index.html'),
         login: resolve(root, 'Login', 'index.html'),
         dashboard: resolve(root, 'Dashboard', 'index.html'),
+        teacher_dashboard: resolve(root, 'TeacherDashboard', 'index.html'),
+        student_dashboard: resolve(root, 'StudentDashboard', 'index.html'),
         project: resolve(root, 'Project','index.html'),
         eval_student: resolve(root, 'Project', 'EvalStudent','index.html'),
         student_profile: resolve(root, 'Project', 'StudentProfile','index.html'),

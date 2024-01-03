@@ -2,21 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import "./teacher_dashboard.css"
 import { Class, Student, Teacher } from '../CustomTypes/firebase_types'
 import { checkIfClassNameTaken, createClass, deleteClass, getStudents, getTeachers, getTeachersClasses } from '../API/database'
-import ClassTile from './class_tile'
+import ClassTile from '../Components/class_tile'
 import PlusIcon from '../assets/plus.png'
 import GearIcon from '../assets/gear.png'
 import SearchBar from '../Components/search_bar'
 import CloseIcon from '../assets/close.png'
-import { signOutUser } from '../API/auth'
+import { getUserId, signOutUser } from '../API/auth'
 import InfoDialog from '../Dialogs/info_dialog'
 
 
-type TeacherDashboardProps = {
-  id: string
-}
-
-
-function TeacherDashboard({id}: TeacherDashboardProps) {
+function TeacherDashboard() {
   const [classes, setClasses] = useState<Class[]>([])
 
 
@@ -28,22 +23,54 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
   const [errorTitle, setErrorTitle] = useState<string>("")
   const [addedTeachers, setAddedTeachers] = useState<Teacher[]>([])
   const [className, setClassName] = useState<string>("")
+  const [id, setId] = useState<string>("")
+  const [background, setBackground] = useState<string>("")
 
-  const [background, setBackground] = useState<"RedPolygon" | "FieryPolygon" | "Hex">("Hex")
   const [students, setStudents] = useState<Student[]>([])
   
   const [addedStudents, setAddedStudents] = useState<Student[]>([])
 
   useEffect(() => {
-    // Generate random background
-    const backgrounds: ("RedPolygon" | "FieryPolygon" | "Hex")[] = ["RedPolygon", "FieryPolygon", "Hex"]
-    const rand: number = Math.floor(Math.random() * backgrounds.length)
-    setBackground(backgrounds[rand])
-    fetchClasses()
+    console.log("Runne")
+    const url = new URL(window.location.href)
+    if(url.searchParams.has("background")){
+      setBackground(url.searchParams.get("background")!)
+    } else {
+      // Generate random background
+      console.log(background)
+      const backgrounds: ("RedPolygon" | "FieryPolygon" | "Hex")[] = ["RedPolygon", "FieryPolygon", "Hex"]
+      const rand: number = Math.floor(Math.random() * backgrounds.length)
+      const url = new URL(window.location.href)
+      url.searchParams.set("background", backgrounds[rand])
+      window.location.href = url.href
+    }
+
+   
+  }, [background])
+  
+  useEffect(() => {
+    async function fetchClasses() {
+      const userId = (await getUserId()) as string
+      setId(userId)
+      const res = await getTeachersClasses(userId)
+      setClasses(res)
+      
+      const tRes: Teacher[] = await getTeachers()
+      setTeachers(tRes)
+  
+      const sRes: Student[] = await getStudents()
+      setStudents(sRes)
+    }
+    (async () => {
+      await fetchClasses()
+    })()
+    
     console.log(classes)
   }, [])
   async function fetchClasses() {
-    const res = await getTeachersClasses(id)
+    const userId = (await getUserId()) as string
+    setId(userId)
+    const res = await getTeachersClasses(userId)
     setClasses(res)
     
     const tRes: Teacher[] = await getTeachers()
@@ -68,7 +95,8 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
     await createClass(className, students, teachers)
 
     modalRef.current?.close()
-    fetchClasses()
+    const res = await getTeachersClasses(id)
+    setClasses(res)
   }
 
   const handleLogOut = async () => {
@@ -101,7 +129,11 @@ function TeacherDashboard({id}: TeacherDashboardProps) {
            {classes.map((teacherClass) => (
               <ClassTile key={teacherClass.name} name={teacherClass.name} id={teacherClass.id} isTeacher={true} deleteClass={handleDeleteClass(teacherClass.id)}/>
             ))}
-            <button className='LogOut' onClick={handleLogOut}>Log Out</button>
+            
+        </div>
+        <br />
+        <div className='Controls'>
+          <button className='LogOut' onClick={handleLogOut}>Log Out</button>
         </div>
         <br />
       </div>
