@@ -39,7 +39,7 @@ function GroupP() {
 
     const closeWarningRef = useRef<HTMLDialogElement>(null)
 
-    const createGroupRef = useRef<HTMLDialogElement>(null)
+
     const [closingRef, setClosingRef] = useState<RefObject<HTMLDialogElement>>()
     const [groupName, setGroupName] = useState<string>("")
     const [groupStudents, setGroupStudents] = useState<Student[]>([])
@@ -101,7 +101,7 @@ function GroupP() {
       const students: string[] = editGroupSudents.map((student) => student.id)
       for (let index = 0; index < editGroupSudents.length; index++) {
         const student = editGroupSudents[index];
-        const inGroup = await userInGroup(classId, projectId, student.id)
+        const inGroup = await userInGroup(classId, projectId, student.id, groupId)
 
         if(inGroup){
           setInfo(`${student.name} is already in another group`)
@@ -113,7 +113,7 @@ function GroupP() {
       }
       await editGroup(classId, projectId, groupId, editGroupName, students)
       await fetchProjects()
-      createGroupRef.current?.close()
+      editGroupRef.current?.close()
     }
 
   return (
@@ -144,7 +144,7 @@ function GroupP() {
       <dialog ref={editGroupRef}>
         <h2>Edit Group</h2>
           <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
-            createGroupRef.current?.close()
+            editGroupRef.current?.close()
           }}/>
           <form>
             <label htmlFor="groupName">Group Name:</label>

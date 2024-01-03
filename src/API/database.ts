@@ -1229,18 +1229,23 @@ async function createGroupFB(classId: string, projectId:string, name: string, st
     
 }
 
-export async function userInGroup(classId:string, projectId:string, userId:string): Promise<boolean> { 
+export async function userInGroup(classId:string, projectId:string, userId:string, groupId?: string): Promise<boolean> { 
     if(ISLOCAL){
-        return userInGroupLocal(classId, projectId, userId)
+        return userInGroupLocal(classId, projectId, userId, groupId)
     }
-    return await userInGroupFB(classId, projectId, userId)
+    return await userInGroupFB(classId, projectId, userId, groupId)
 }
 
-function userInGroupLocal(classId: string, projectId: string, userId: string): boolean{
+function userInGroupLocal(classId: string, projectId: string, userId: string, groupId?: string): boolean{
     const projectData = localClasses[classId].projects[projectId]
     const groups = projectData.groups
     for(const key in groups){
         const group = groups[key]
+        if(groupId != undefined){
+            if(group.id == groupId){
+                break
+            }
+        }
 
         if(group.students.includes(userId)){
             return true
@@ -1249,11 +1254,16 @@ function userInGroupLocal(classId: string, projectId: string, userId: string): b
     return false
 }
 
-async function userInGroupFB(classId: string, projectId: string, userId: string): Promise<boolean>{
+async function userInGroupFB(classId: string, projectId: string, userId: string, groupId?: string): Promise<boolean>{
     const projectData = await getProjectData(classId, projectId)
     const groups = projectData.groups
     for(const key in groups){
         const group = groups[key]
+        if(groupId != undefined){
+            if(group.id == groupId){
+                break
+            }
+        }
         if(group.students.includes(userId)){
             return true
         }
