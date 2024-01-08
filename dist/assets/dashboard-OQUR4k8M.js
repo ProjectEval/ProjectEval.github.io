@@ -1,0 +1,1 @@
+import{c as e,j as o,R as t,g as i}from"./auth-oVEDy-JP.js";import{D as n}from"./dashboard-8uYcT-p2.js";async function a(){await i()||(window.location.href=window.location.origin+"/Login/")}(async()=>await a())();e.createRoot(document.getElementById("root")).render(o.jsx(t.StrictMode,{children:o.jsx(n,{})}));
