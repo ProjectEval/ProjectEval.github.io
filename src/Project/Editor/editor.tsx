@@ -104,7 +104,7 @@ function Editor() {
   const handleSaveDefaultTemplate = async () => {
     await saveDefaultTemplate(userId, elements)
     setInfoTitle("Saved as Default Template")
-    setInfo("Successfully saved teemplate as default")
+    setInfo("Successfully saved template as default")
     infoModalRef.current?.showModal()
   }
 
