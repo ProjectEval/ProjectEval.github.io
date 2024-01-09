@@ -56,10 +56,12 @@ export type EvalSubmission = {
     id: string;
     value: string | number;
     comment?: string;
+    student?: string;
 }
 
 export type Group = {
     name: string
     students: string[]
     id: string
+    index: number
 }

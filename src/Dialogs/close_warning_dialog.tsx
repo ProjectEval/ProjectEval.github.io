@@ -2,9 +2,10 @@ import './close_warning_dialog.css'
 type CloseWarningDialogProps = {
    closeWarningRef: React.RefObject<HTMLDialogElement>
    connectedRef: React.RefObject<HTMLDialogElement>
+   onYes?: () => void
 }
 
-function CloseWarningDialog({closeWarningRef, connectedRef}: CloseWarningDialogProps) {
+function CloseWarningDialog({closeWarningRef, connectedRef, onYes}: CloseWarningDialogProps) {
     
   return (
     <>
@@ -14,6 +15,9 @@ function CloseWarningDialog({closeWarningRef, connectedRef}: CloseWarningDialogP
         <br />
         <br />
         <button onClick={() => {
+          if (onYes) {
+            onYes()
+          }
           closeWarningRef.current?.close()
           connectedRef.current?.close()
         }}>Yes</button>

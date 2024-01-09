@@ -28,7 +28,7 @@ function SearchBar<T>({name, content, updateContent, defaultAddedContent, curren
 
   useEffect(() => {
     const getData = async () => {
-      // console.log(currentUserId)
+      console.log(currentUserId)
       if(currentUserId == ""){
         return
       }
@@ -37,9 +37,13 @@ function SearchBar<T>({name, content, updateContent, defaultAddedContent, curren
 
       if (teacher){
         const teacher: Teacher = await getTeacherData(currentUserId)
+        console.log("IS Teacher")
+        console.log(teacher)
         setCurrentUserName(teacher.name)
+       
       } else {
         const student: Student = await getStudentData(currentUserId)
+        console.log("IS Student")
         setCurrentUserName(student.name)
       }
      
@@ -60,6 +64,7 @@ function SearchBar<T>({name, content, updateContent, defaultAddedContent, curren
     // console.log(addedContent)
     const addedContentNames: string[] = addedContent.map((content) => content.name)
     //Filter out any object that has name in addedContent that includes search
+    console.log(currentUserName)
     let searchResults: T[] = content.filter(
       (searchRes) =>
       searchRes.name.toLowerCase().includes(search.toLowerCase()) && !addedContentNames.includes(searchRes.name) && searchRes.name.toLowerCase() != currentUserName.toLowerCase()
@@ -73,7 +78,7 @@ function SearchBar<T>({name, content, updateContent, defaultAddedContent, curren
       
     // console.log(searchResults)
     setSearchResults(searchResults)
-  }, [search, content, addedContent])
+  }, [search, content, addedContent, currentUserName])
 
 
   return (

@@ -79,8 +79,13 @@ function StudentProfile() {
                 const question: Question<Answer> = evalQs[i]
                 const submissions: EvalSubmission[] = []
                 evals.forEach((e) => {
-                    submissions.push({id: e.submission[i].id, value: e.submission[i].value, comment: e.submission[i].comment})
+                    submissions.push({id: e.submission[i].id, value: e.submission[i].value, comment: e.submission[i].comment, student: e.submitterId})
                 })
+                for(let j = 0; j < submissions.length; j++){
+                    const submission = submissions[j]
+                    const student = await getStudentData(submission.student!)
+                    submission.student = student.name
+                }
                 matchedQSubs.push({question: question, submissions: submissions})
                 // setMatchedQSubs((prev) => [...prev, {question: question, submissions: submissions}])
             }
@@ -108,7 +113,7 @@ function StudentProfile() {
         }}/>
             <div className='Results'>
             {evalSubmissions.length > 0 ? matchedQSubs.map((q) => (
-                <QuestionCard question={q.question} submissions={q.submissions} cardColor={cardColor}/>
+                <QuestionCard question={q.question} submissions={q.submissions} cardColor={cardColor} isCurrentStudent={isCurrentStudent}/>
             )) : 
             <h3>No Evaluations Yet!</h3>}
             </div>

@@ -140,6 +140,10 @@ function TeacherDashboard() {
       <dialog ref={modalRef}>
         <h2>Create Class</h2>
         <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
+          setClassName("")
+          setAddedStudents([])
+          setAddedTeachers([])
+
           modalRef.current?.close()
         }}/>
         <form>
@@ -150,12 +154,12 @@ function TeacherDashboard() {
           }}/>
           <br />
           <label htmlFor="">Other Teachers: </label>
-            <SearchBar<Teacher> name="Teacher" content={teachers} currentUserId={id} updateContent={(content) => {
+            <SearchBar<Teacher> name="Teacher" content={teachers} currentUserId={id} defaultAddedContent={addedTeachers} updateContent={(content) => {
               setAddedTeachers(content)
             }}/>
           <br />
           <label htmlFor="">Students: </label>
-            <SearchBar<Student> name="Student" content={students} currentUserId={id} updateContent={(content) => {
+            <SearchBar<Student> name="Student" content={students} currentUserId={id} defaultAddedContent={addedStudents} updateContent={(content) => {
               setAddedStudents(content)
             }}/>
           <br />

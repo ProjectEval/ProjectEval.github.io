@@ -45,6 +45,7 @@ function Project() {
     const [groupName, setGroupName] = useState<string>("")
     const [groupStudents, setGroupStudents] = useState<Student[]>([])
     const [copiedProj, setCopiedProj] = useState<boolean>(false)
+    const [loadingData, setLoadingData] = useState<boolean>(true)
 
     useEffect(() => {
         
@@ -85,6 +86,12 @@ function Project() {
       setIsTeacher(isTeacher)
       if (isTeacher){
         const gRes = await getProjectGroups(classId, projectId)
+        //Sort groups by index
+        gRes.sort((a, b) => {
+          return a.index - b.index
+        })
+        
+        
         setGroups(gRes)
       } else {
         const gRes = await getStudentGroup(classId, projectId, userId as string)
@@ -101,6 +108,7 @@ function Project() {
               warningRef.current?.showModal()
           }
       }
+      setLoadingData(false)
 
   }
 
@@ -126,6 +134,14 @@ function Project() {
         }
         
       }
+
+      const groupNameExists = groups.find((group) => group.name == groupName)
+      if(groupNameExists != undefined){
+        setInfo("A group with that name already exists!")
+        setTitle("Unable to create group")
+        infoModalRef.current?.showModal()
+        return
+      }
       await createGroup(classId, projectId, groupName, students)
       await fetchProjects()
       createGroupRef.current?.close()
@@ -138,6 +154,7 @@ function Project() {
 
   return (
     <>
+    {!loadingData ?
      <div className={'Center ' + background} style={{backgroundColor: backgroundColor}}>
         <h2 className='Title'>{ProjectName}</h2>
         {isTeacher && <div className="TeacherIcons">
@@ -181,7 +198,7 @@ function Project() {
         </div>
       </> }
         <br />
-      </div>
+      </div> : <div className="Loading"></div>}
       <dialog ref={warningRef} className="warningDialog">
               <label>This project has no evaluation template! You need to create one before you can evaluate students.</label>
               <br />
@@ -202,6 +219,7 @@ function Project() {
         <h2>Edit Project</h2>
         <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
           setClosingRef(editProjectRef)
+          
           closeWarningRef.current?.showModal()
         }}/>
        
@@ -247,9 +265,15 @@ function Project() {
         window.location.href = url.origin + "/Projects/" + url.search
 
       }}/>
-      <dialog ref={createGroupRef}>
+      <dialog ref={createGroupRef} onClose={() => {
+        setGroupName("")
+        setGroupStudents([])
+        createGroupRef.current?.close()
+      }}>
         <h2>Create Group</h2>
           <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
+            setGroupName("")
+            setGroupStudents([])
             createGroupRef.current?.close()
           }}/>
           <form>
@@ -262,7 +286,7 @@ function Project() {
             
               
             <label htmlFor="" className="InviteTitle">Students: </label>
-            <SearchBar<Student> name="Student" content={classStudents} currentUserId={userId} updateContent={(content) => {
+            <SearchBar<Student> name="Student" content={classStudents} currentUserId={userId} defaultAddedContent={groupStudents} updateContent={(content) => {
               setGroupStudents(content)
             }}/>
               
@@ -270,7 +294,10 @@ function Project() {
             <button type="button" onClick={handleCreateGroup}>Create Group</button>
           </form>
       </dialog>
-      <CloseWarningDialog closeWarningRef={closeWarningRef} connectedRef={closingRef!}/>
+      <CloseWarningDialog closeWarningRef={closeWarningRef} connectedRef={closingRef!} onYes={() => {
+                  setEditProjName(ProjectName)
+
+      }}/>
       <ChooseBackgroundDialog setBackground={setBackground} backgroundRef={editBackgroundRef} currentBackground={background}/>
       <ChooseColorDialog setBgColor={setBackgroundColor} colorRef={editColorRef} currentBgColor={backgroundColor} isProject={true} currentTileColor={cardColor} setTileColor={setCardColor} currentEvalBgColor={evalBackgroundColor} setEvalBgColor={setEvalBgColor}/>
 

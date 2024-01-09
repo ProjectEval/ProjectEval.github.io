@@ -14,9 +14,11 @@ type QuestionCardProps = {
     question: Question<Answer>;
     submissions: EvalSubmission[];
     cardColor: string;
+
+    isCurrentStudent: boolean;
 }
 
-function QuestionCard({question, submissions, cardColor}: QuestionCardProps) {
+function QuestionCard({question, submissions, cardColor, isCurrentStudent}: QuestionCardProps) {
   const [sumbissionIndex, setSubmissionIndex] = useState<number>(0)
   const [rangeAverage, setRangeAverage] = useState<number>(0)
   const [choices, setChoices] = useState<ChoiceOverview[]>([])
@@ -78,15 +80,15 @@ function QuestionCard({question, submissions, cardColor}: QuestionCardProps) {
           :
 
           
-            <FreeResponseSubmissionCard cardColor={cardColor} answer={submissions[ sumbissionIndex - 1].value.toString()} comment={submissions[sumbissionIndex - 1].comment}/>
+            <FreeResponseSubmissionCard cardColor={cardColor} answer={submissions[ sumbissionIndex - 1].value.toString()} comment={submissions[sumbissionIndex - 1].comment} userName={!isCurrentStudent ? submissions[sumbissionIndex -1].student: undefined}/>
           
           : question.Answer.Type == "Range" ?
             sumbissionIndex == 0 ?
             <RangeOverviewCard cardColor={cardColor} average={rangeAverage}/>
           :
-          <RangeSubmissionCard cardColor={cardColor} answer={submissions[sumbissionIndex - 1].value.toString()} comment={submissions[sumbissionIndex - 1].comment} max={question.Answer.Max}/>
+          <RangeSubmissionCard cardColor={cardColor} answer={submissions[sumbissionIndex - 1].value.toString()} comment={submissions[sumbissionIndex - 1].comment} max={question.Answer.Max} userName={!isCurrentStudent ? submissions[sumbissionIndex - 1].student: undefined}/>
           :
-          <FreeResponseSubmissionCard cardColor={cardColor} answer={submissions[sumbissionIndex ].value.toString()} comment={submissions[sumbissionIndex].comment}/>
+          <FreeResponseSubmissionCard cardColor={cardColor} answer={submissions[sumbissionIndex ].value.toString()} comment={submissions[sumbissionIndex].comment} userName={!isCurrentStudent ? submissions[sumbissionIndex ].student: undefined}/>
         }
         <div className="Controls">
           <img src={LeftCircle} alt="Past Submission"className={"LeftSubmission " + (sumbissionIndex == 0 ? "Disabled" : "")} onClick={() => {

@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     max-height: 550px;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .Center{

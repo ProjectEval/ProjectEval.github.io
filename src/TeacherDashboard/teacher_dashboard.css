@@ -1,5 +1,5 @@
 .Center{
-    overflow: visible !important;
+    overflow-x: visible !important;
 }
 
 .Classes{
@@ -8,7 +8,7 @@
     align-items: center;
     gap: 10px;
     max-height: 550px;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .Title {

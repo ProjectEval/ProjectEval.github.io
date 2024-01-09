@@ -509,7 +509,7 @@ async function createClassLocal(name: string, students: string[], teachers: stri
         teachers: teachers,
         id: id,
         projects: {},
-        background: "",
+        background: "Hex",
         backgroundColor: ""
     }
     console.log("Created class with id " + id)
@@ -522,7 +522,7 @@ async function createClassFB(name: string, students: string[], teachers: string[
         name: name,
         students: students,
         teachers: teachers,
-        background: "",
+        background: "Hex",
         backgroundColor: ""
     })
 
@@ -534,23 +534,32 @@ async function createClassFB(name: string, students: string[], teachers: string[
     
 }
 
-export async function createProject(name: string, classId: string){
+export async function createProject(name: string, classId: string, numGroups: number){
     if(ISLOCAL) {
-        await createProjectLocal(name, classId)
+        await createProjectLocal(name, classId, numGroups)
         return
     }
-    await createProjectFB(name, classId)
+    await createProjectFB(name, classId, numGroups)
 }
 
-async function createProjectLocal(name: string, classId: string){
+async function createProjectLocal(name: string, classId: string, numGroups: number){
     const id = "project" + Math.floor(Math.random() * 1000000000)
+    const groups: Record<string, Group> = {}
+    for(let i = 0; i < numGroups; i++){
+        groups["group" + i] = {
+            name: "Group " + (i+1),
+            students: [],
+            id: "group" + i,
+            index: i + 1
+        }
+    }
     localClasses[classId].projects[id] = {
         name: name,
-        groups: {},
+        groups: groups,
         eval_template: [],
         evals: [],
         id: id,
-        background: "",
+        background: "Hex",
         backgroundColor: "#21212152",
         cardColor: "",
         evalBackgroundColor: "#21212152"
@@ -559,21 +568,37 @@ async function createProjectLocal(name: string, classId: string){
     await saveFile("Classes",JSON.stringify(localClasses))
 }
 
-async function createProjectFB(name: string, classId: string){
+async function createProjectFB(name: string, classId: string, numGroups: number){
+    
+    
     const id = await addDoc(collection(db, "Classes", classId, "Projects"), {
         name: name,
         eval_template: [],
         evals: [],
-        background: "",
+        background: "Hex",
         backgroundColor: "#21212152",
         cardColor: "",
-        evalBackgroundColor: "#21212152"
+        evalBackgroundColor: "#21212152",
     })
 
     //Update the class with the id
     await updateDoc(doc(db, "Classes", classId, "Projects", id.id), {
         id: id.id
     })
+
+    for(let i = 0; i < numGroups; i++){
+        const group = {
+            name: "Group " + (i+1),
+            students: [],
+            index: i + 1
+           
+        }
+        const groupId = await addDoc(collection(db, "Classes", classId, "Projects", id.id,"Groups"), group)
+        await updateDoc(doc(db, "Classes", classId, "Projects", id.id, "Groups", groupId.id), {
+            id: groupId.id
+        })
+
+    }
     console.log("Created project with id " + id.id)
 }
 
@@ -1137,20 +1162,28 @@ function getProjectGroupsLocal(classId: string, projectId: string): Group[]{
         groups.push({
             name: groupData.name,
             id: groupData.id,
-            students: groupData.students
+            students: groupData.students,
+            index: groupData.index
         })
     }
     return groups
 }
 
 async function getProjectGroupsFB(classId: string, projectId: string): Promise<Group[]>{
-    const projectData = await getProjectData(classId, projectId)
-    const projectGroups = projectData.groups
+    const q = query(collection(db, "Classes", classId, "Projects", projectId, "Groups"))
+    const querySnapshot = await getDocs(q)
     const groups: Group[] = []
-    for (const key in projectGroups) {
-        const groupData = projectGroups[key]
-        groups.push(groupData)
-    }
+    const data = querySnapshot.docs.map((doc) => doc.data())
+    data.forEach((groupData) => {
+        groups.push({
+            name: groupData.name,
+            students: groupData.students,
+            id: groupData.id,
+            index: groupData.index
+        })
+        
+    })
+   
     return groups
 }
 
@@ -1176,16 +1209,15 @@ function getStudentGroupLocal(classId: string, projectId: string, userId: string
 }
 
 async function getStudentGroupFB(classId: string, projectId: string, userId: string): Promise<Group | undefined>{
-    const projectData = await getProjectData(classId, projectId)
-    const projectGroups = projectData.groups
-    for (const key in projectGroups) {
-        const groupData = projectGroups[key]
-        const students = groupData.students
-        if(students.includes(userId)){
-            return groupData
-        }
+   //get group where list students contain userId
+   const groupQ = query(collection(db, "Classes", classId, "Projects", projectId, "Groups"), where("students", "array-contains", userId))
+    const groupQuerySnapshot = await getDocs(groupQ)
+    const groupData = groupQuerySnapshot.docs.map((doc) => doc.data())
+    if(groupData.length > 0){
+        return groupData[0] as Group
     }
     return undefined
+    
 }
 
 export async function createGroup(classId: string, projectId:string, name: string, students: string[]) {
@@ -1201,11 +1233,15 @@ async function createGroupLocal(classId: string, projectId:string, name: string,
     const id = "class" + Math.floor(Math.random() * 1000000000)
     const classData = localClasses[classId]
     const projectData = classData.projects[projectId]
-
+    let index = 0
+    if(name.includes("Group") && name.split("Group").length == 2){
+        index = parseInt(name.split("Group")[1])
+    }
     projectData.groups[id] = {
         name: name,
         students: students,
-        id: id
+        id: id,
+        index: index
     }
     console.log("Created group with id " + id)
     await saveFile("Classes",JSON.stringify(localClasses))
@@ -1213,9 +1249,14 @@ async function createGroupLocal(classId: string, projectId:string, name: string,
 }
 
 async function createGroupFB(classId: string, projectId:string, name: string, students: string[]) {
+    let index = 0
+    if(name.includes("Group") && name.split("Group").length == 2){
+        index = parseInt(name.split("Group")[1])
+    }
     const id = await addDoc(collection(db, "Classes", classId, "Projects", projectId, "Groups"), {
         name: name,
         students: students,
+        index: index
 
 
     })
@@ -1254,19 +1295,23 @@ function userInGroupLocal(classId: string, projectId: string, userId: string, gr
 }
 
 async function userInGroupFB(classId: string, projectId: string, userId: string, groupId?: string): Promise<boolean>{
-    const projectData = await getProjectData(classId, projectId)
-    const groups = projectData.groups
-    for(const key in groups){
-        const group = groups[key]
+    const groupQ = query(collection(db, "Classes", classId, "Projects", projectId, "Groups"), where("students", "array-contains", userId))
+    const groupQuerySnapshot = await getDocs(groupQ)
+    const groupData = groupQuerySnapshot.docs.map((doc) => doc.data())
+    //loop through groups and ignore groupId if it is defined
+    for(const key in groupData){
+        const group = groupData[key]
         if(groupId != undefined){
             if(group.id == groupId){
                 break
             }
         }
+
         if(group.students.includes(userId)){
             return true
         }
     }
+    
     return false
 }
 
@@ -1282,8 +1327,12 @@ function getGroupDataLocal(classId: string, projectId: string, groupId: string):
 }
 
 async function getGroupDataFB(classId: string, projectId: string, groupId: string): Promise<Group> {
-    const projectData = await getProjectData(classId, projectId)
-    return projectData.groups[groupId]
+    const  group = doc(db, "Classes", classId, "Projects", projectId, "Groups", groupId)
+    const groupData = (await getDoc(group)).data()
+    if (groupData) {
+        return groupData as Group
+    }
+    return {name: "", id: "", students: [], index: 0}
 }
 
 export async function editGroup(classId: string, projectId: string, groupId: string, groupName: string, students: string[]){
@@ -1331,7 +1380,7 @@ export async function deleteGroup(classId: string, projectId: string, groupId: s
         await deleteGroupLocal(classId, projectId, groupId)
         return
     }
-    await deleteGroupFB
+    await deleteGroupFB(classId, projectId, groupId)
 }
 
 async function deleteGroupLocal(classId: string, projectId: string, groupId: string){

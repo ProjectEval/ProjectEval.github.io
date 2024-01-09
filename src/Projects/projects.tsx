@@ -14,6 +14,7 @@ import LinkIcon from "../assets/link.png"
 import ChooseBackgroundDialog from "../Dialogs/choose_background_dialog";
 import CloseWarningDialog from "../Dialogs/close_warning_dialog";
 import ChooseColorDialog from "../Dialogs/choose_colors_dialog";
+import { set } from "firebase/database";
 
 
 function Projects() {
@@ -38,9 +39,12 @@ function Projects() {
     const errorModalRef = useRef<HTMLDialogElement>(null)
     const [error, setError] = useState<string>("")
     const [errorTitle, setErrorTitle] = useState<string>("")
-
+    const [editClassStudents, setEditClassStudents] = useState<Student[]>([])
+    const [editClassTeachers, setEditClassTeachers] = useState<Teacher[]>([])
     const [background, setBackground] = useState<string>("")
     const closeWarningRef = useRef<HTMLDialogElement>(null)
+    const [projNumGroups, setProjNumGroups] = useState<number>(0)
+    const [creatingProject, setCreatingProject] = useState<boolean>(false)
 
     useEffect(() => {
         
@@ -69,6 +73,7 @@ function Projects() {
         //Filter out current teacher
         const filteredTeachers: Teacher[] = teachers.filter((teacher) => teacher.id != userId)
         setTeachers(filteredTeachers)
+        setEditClassTeachers(filteredTeachers)
         console.log(teachers)
         const teacher = await checkIfTeacher(userId as string)
         setIsTeacher(teacher)
@@ -90,27 +95,30 @@ function Projects() {
         setAllTeachers(tRes)
         const classStudents: Student[] = await getStudentsInClass(classIds)
         setClassStudents(classStudents)
+        setEditClassStudents(classStudents)
     }
 
     const handleCreateProject = async () => {
+      setCreatingProject(true)
         const projectNameTaken: boolean = await checkIfProjectNameTaken(classId, projectName)
         if (projectNameTaken){
           setError("This project name is already taken!")
           setErrorTitle("Project Name Taken")
           errorModalRef.current?.showModal()
+          setCreatingProject(false)
           return
         }
 
-        await createProject(projectName, classId)
-    
+        await createProject(projectName, classId, projNumGroups)
+        setCreatingProject(false)
         modalRef.current?.close()
         fetchProjects()
     }
 
     const handleEditClass = async () => {
-        const teachers: string[] = addedTeachers.map((teacher) => teacher.id)
+        const teachers: string[] = editClassTeachers.map((teacher) => teacher.id)
         teachers.push(userId)
-        const students: string[] = classStudents.map((student) => student.id)
+        const students: string[] = editClassStudents.map((student) => student.id)
         await editClass(classId, editClassName, students, teachers, background, backgroundColor)
     
         editClassRef.current?.close()
@@ -155,6 +163,8 @@ function Projects() {
       <dialog ref={modalRef}>
         <h2>Create Project</h2>
         <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
+          setProjectName("")
+          setProjNumGroups(0)
           modalRef.current?.close()
         }}/>
         <form>
@@ -163,9 +173,16 @@ function Projects() {
           <input type="text" name="projectName" id="projectName" value={projectName} onChange={(e) => {
             setProjectName(e.target.value)
           }}/>
-    
           <br />
-          <button type="button" onClick={handleCreateProject}>Create Project</button>
+          <br />
+          <label htmlFor="projectGroups">Number of Groups:</label>
+          <span> </span>
+          <input type="number" name="projectGroups" id="projectGroups" value={projNumGroups} onChange={(e) => {
+            setProjNumGroups(parseInt(e.target.value))
+          }}/>
+          <br />
+          <br />
+          {creatingProject ? <div className="Loading"></div> : <button type="button" onClick={handleCreateProject}>Create Project</button>}
         </form>
       </dialog>
       <dialog ref={editClassRef} className="EditClassDialog">
@@ -183,15 +200,15 @@ function Projects() {
           <div className="Invitees">
             <div>
               <label htmlFor="" className="InviteTitle">Other Teachers: </label>
-              <SearchBar<Teacher> name="Teacher" content={allTeachers} currentUserId={userId} defaultAddedContent={teachers} updateContent={(content) => {
-                setAddedTeachers(content)
+              <SearchBar<Teacher> name="Teacher" content={allTeachers} currentUserId={userId} defaultAddedContent={editClassTeachers} updateContent={(content) => {
+                setEditClassTeachers(content)
               }}/>
             </div>
             
             <div>
               <label htmlFor="" className="InviteTitle">Students: </label>
-              <SearchBar<Student> name="Student" content={students} currentUserId={userId} defaultAddedContent={classStudents} updateContent={(content) => {
-                setClassStudents(content)
+              <SearchBar<Student> name="Student" content={students} currentUserId={userId} defaultAddedContent={editClassStudents} updateContent={(content) => {
+                setEditClassStudents(content)
               }}/>
             </div>
             
@@ -211,7 +228,11 @@ function Projects() {
         </form>
       </dialog>
       
-      <CloseWarningDialog closeWarningRef={closeWarningRef} connectedRef={editClassRef}/>
+      <CloseWarningDialog closeWarningRef={closeWarningRef} connectedRef={editClassRef} onYes={() => {
+        setEditClassName(className)
+        setEditClassStudents(classStudents)
+        setEditClassTeachers(teachers)
+      }}/>
       <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef}/>
       <ChooseBackgroundDialog setBackground={setBackground} backgroundRef={chooseBackgroundRef} currentBackground={background}/>
       <ChooseColorDialog setBgColor={setBackgroundColor} colorRef={chooseColorRef} currentBgColor={backgroundColor} isProject={false}/>
