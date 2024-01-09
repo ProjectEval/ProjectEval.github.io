@@ -10,7 +10,7 @@
     /* justify-content: space-evenly; */
     gap: 10px;
     width: 90%;
-    overflow: scroll;
+    overflow: auto;
     height: 100%;
 }
 

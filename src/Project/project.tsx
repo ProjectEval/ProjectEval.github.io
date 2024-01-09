@@ -108,6 +108,8 @@ function Project() {
           setInGroup(true)
           setGroupId(sRes.id)
           const students = await getStudentsData(sRes.students)
+          console.log(students)
+          console.log(sRes.students)
           setStudents(students)
         } else {
           setProjectGroups(gRes)
@@ -242,6 +244,7 @@ function Project() {
           <select className="groupsSelect" onChange={(e) => {
             setStudentJoinGroupId(e.target.value)
           }}>
+            <option value="">Select a group</option>
             {projectGroups.map((group) => (
               <option value={group.id}>{group.name}</option>
             ))}
@@ -249,6 +252,15 @@ function Project() {
           <br />
           {joiningGroup ? <div className="LoadingJoin"></div> : <button type="button" onClick={ async () => {
             setJoiningGroup(true)
+            if(studentJoinGroupId == ""){
+              setInfo("Please select a group!")
+              setTitle("Unable to join group")
+              infoModalRef.current?.showModal()
+              setJoiningGroup(false)
+              return
+            }
+            console.log(studentJoinGroupId)
+            console.log(userId)
             await studentJoinGroup(classId, projectId, studentJoinGroupId, userId)
             await fetchProjects()
             setJoiningGroup(false)
