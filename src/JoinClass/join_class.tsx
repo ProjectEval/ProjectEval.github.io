@@ -57,7 +57,7 @@ function JoinClass() {
   
   return (
     <>
-      <div className='Center'>
+      <div className='Center Hex'>
         <h2 className='Title'>Join Class - {className}</h2>
         <button onClick={handleJoinClass}>Join Class</button>
         <br />
