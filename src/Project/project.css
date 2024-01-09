@@ -58,8 +58,22 @@
     gap: 10px;
 }
 
+.StudentIcons{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+}
 .CopyIcon{
     width: 25px;
+    cursor: pointer;
+}
+
+.LeaveIcon{
+    width: 32px;
+    height: auto;
     cursor: pointer;
 }
 
@@ -83,6 +97,18 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+  .LoadingJoin {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #3498db;
+    width: 30px;
+    height: 30px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+    /* Center this */
+   
+  }
   
   /* Safari */
   @-webkit-keyframes spin {
@@ -93,4 +119,24 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .groupsSelect{
+        width: auto;
+        height: auto;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid transparent;
+        background-color: #212121;
+        color: white;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        font-family: inherit;
+        /* transition: border-color 0.25s; */
+  }
+
+  .joinGroupWarning{
+    line-height: normal;
+    margin: 0;
   }

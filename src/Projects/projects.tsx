@@ -46,6 +46,7 @@ function Projects() {
     const [projNumGroups, setProjNumGroups] = useState<number>(0)
     const [creatingProject, setCreatingProject] = useState<boolean>(false)
 
+
     useEffect(() => {
         
         fetchProjects()
@@ -160,7 +161,11 @@ function Projects() {
         </div>
         <br />
       </div>
-      <dialog ref={modalRef}>
+      <dialog ref={modalRef} onClose={() => {
+        setProjectName("")
+        setProjNumGroups(0)
+
+      }}>
         <h2>Create Project</h2>
         <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
           setProjectName("")
@@ -185,9 +190,15 @@ function Projects() {
           {creatingProject ? <div className="Loading"></div> : <button type="button" onClick={handleCreateProject}>Create Project</button>}
         </form>
       </dialog>
-      <dialog ref={editClassRef} className="EditClassDialog">
+      <dialog ref={editClassRef} className="EditClassDialog" onClose={(e) => {
+        
+        closeWarningRef.current?.showModal()
+      }}>
         <h2>Edit Class</h2>
         <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
+          setEditClassName(className)
+          setEditClassStudents(classStudents)
+          setEditClassTeachers(teachers)
           closeWarningRef.current?.showModal()
         }}/>
         <form>
@@ -232,7 +243,9 @@ function Projects() {
         setEditClassName(className)
         setEditClassStudents(classStudents)
         setEditClassTeachers(teachers)
-      }}/>
+       
+      }} onNo={() => {
+        editClassRef.current?.showModal()}}/>
       <InfoDialog info={error} Title={errorTitle} infoModalRef={errorModalRef}/>
       <ChooseBackgroundDialog setBackground={setBackground} backgroundRef={chooseBackgroundRef} currentBackground={background}/>
       <ChooseColorDialog setBgColor={setBackgroundColor} colorRef={chooseColorRef} currentBgColor={backgroundColor} isProject={false}/>

@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import "./project.css"
 import { Group, Student } from "../CustomTypes/firebase_types";
-import { checkIfTeacher, copyProject, createGroup, deleteGroup, editProject, getClassData, getProjectData, getProjectEvalTemplate, getProjectGroups, getStudentGroup, getStudentsData, getStudentsInClass, userInGroup } from "../API/database";
+import { addStudentsToGroup, checkIfTeacher, copyProject, createGroup, deleteGroup, editProject, getClassData, getProjectData, getProjectEvalTemplate, getProjectGroups, getStudentGroup, getStudentsData, getStudentsInClass, leaveGroup, studentJoinGroup, userInGroup } from "../API/database";
 import StudentTile from "./student_tile";
 import EditIcon from "../assets/square_pencil.png"
 import SearchBar from "../Components/search_bar";
@@ -15,6 +15,7 @@ import ChooseBackgroundDialog from "../Dialogs/choose_background_dialog";
 import CloseWarningDialog from "../Dialogs/close_warning_dialog";
 import ChooseColorDialog from "../Dialogs/choose_colors_dialog";
 import GroupTile from "./group_tile";
+import LeaveIcon from "../assets/leave.png"
 
 
 function Project() {
@@ -43,9 +44,15 @@ function Project() {
     const createGroupRef = useRef<HTMLDialogElement>(null)
     const [closingRef, setClosingRef] = useState<RefObject<HTMLDialogElement>>()
     const [groupName, setGroupName] = useState<string>("")
+    const [groupId, setGroupId] = useState<string>("")
     const [groupStudents, setGroupStudents] = useState<Student[]>([])
     const [copiedProj, setCopiedProj] = useState<boolean>(false)
     const [loadingData, setLoadingData] = useState<boolean>(true)
+    const [projectGroups, setProjectGroups] = useState<Group[]>([])
+    const [studentJoinGroupId, setStudentJoinGroupId] = useState<string>("")
+    const [joiningGroup, setJoiningGroup] = useState<boolean>(false)
+    const addStudentRef = useRef<HTMLDialogElement>(null)
+    const [addingStudents, setAddingStudents] = useState<boolean>(false)
 
     useEffect(() => {
         
@@ -84,22 +91,28 @@ function Project() {
    
       const isTeacher = await checkIfTeacher(userId as string)
       setIsTeacher(isTeacher)
-      if (isTeacher){
-        const gRes = await getProjectGroups(classId, projectId)
+      const gRes = await getProjectGroups(classId, projectId)
         //Sort groups by index
         gRes.sort((a, b) => {
           return a.index - b.index
         })
         
+      if (isTeacher){
         
         setGroups(gRes)
+        
+       
       } else {
-        const gRes = await getStudentGroup(classId, projectId, userId as string)
-        if(gRes != undefined){
+        const sRes = await getStudentGroup(classId, projectId, userId as string)
+        if(sRes != undefined){
           setInGroup(true)
-          const students = await getStudentsData(gRes.students)
+          setGroupId(sRes.id)
+          const students = await getStudentsData(sRes.students)
           setStudents(students)
+        } else {
+          setProjectGroups(gRes)
         }
+        
         
       }
       if(isTeacher){
@@ -152,12 +165,33 @@ function Project() {
       await fetchProjects()
     }
 
+    const handleAddStudents = async () => {
+      setAddingStudents(true)
+      const students: string[] = groupStudents.map((student) => student.id)
+      for (let index = 0; index < groupStudents.length; index++) {
+        const student = groupStudents[index];
+        const inGroup = await userInGroup(classId, projectId, student.id)
+
+        if(inGroup){
+          setInfo(`${student.name} is already in another group`)
+          setTitle("Unable to add students")
+          infoModalRef.current?.showModal()
+          return
+        }
+        
+      }
+      await addStudentsToGroup(classId, projectId, groupId , students)
+      await fetchProjects()
+      addStudentRef.current?.close()
+      setAddingStudents(false)
+    }
+
   return (
     <>
     {!loadingData ?
      <div className={'Center ' + background} style={{backgroundColor: backgroundColor}}>
         <h2 className='Title'>{ProjectName}</h2>
-        {isTeacher && <div className="TeacherIcons">
+        {isTeacher ? <div className="TeacherIcons">
           <img src={CopyIcon} alt="copy project" className='CopyIcon' onClick={async () => {
             setCopiedProj(true)
             await copyProject(classId, projectId)
@@ -172,7 +206,20 @@ function Project() {
          <img src={PlusIcon} alt="add group" className='PlusIcon' onClick={() => {
           createGroupRef.current?.showModal()
         }}/>
+        </div> : inGroup && <div className="StudentIcons">
+          <img src={LeaveIcon} alt="leave group" className='LeaveIcon' onClick={async () => {
+            await leaveGroup(classId, projectId, groupId, userId)
+            setInGroup(false)
+            await fetchProjects()
+          }}/>
+          
+          
+         <img src={PlusIcon} alt="add group" className='PlusIcon' onClick={() => {
+          
+          addStudentRef.current?.showModal()
+        }}/>
         </div>
+
        }
         <img src={BackArrow} alt="back" className="BackArrow" onClick={() => {
           const url = new URL(window.location.href)     
@@ -188,7 +235,26 @@ function Project() {
             ))}
         </div>
         </>
-        : <h2>Not in a group!</h2>
+        : <>
+        <br />
+          <h3 className="joinGroupWarning">Please join a group!</h3>
+          <h2>Groups: </h2>
+          <select className="groupsSelect" onChange={(e) => {
+            setStudentJoinGroupId(e.target.value)
+          }}>
+            {projectGroups.map((group) => (
+              <option value={group.id}>{group.name}</option>
+            ))}
+          </select>
+          <br />
+          {joiningGroup ? <div className="LoadingJoin"></div> : <button type="button" onClick={ async () => {
+            setJoiningGroup(true)
+            await studentJoinGroup(classId, projectId, studentJoinGroupId, userId)
+            await fetchProjects()
+            setJoiningGroup(false)
+          }}>Join Group</button>}
+          
+        </>
       : <>
         <h3>Groups:</h3>
         <div className="Students">
@@ -292,6 +358,26 @@ function Project() {
               
             <br />
             <button type="button" onClick={handleCreateGroup}>Create Group</button>
+          </form>
+      </dialog>
+      <dialog ref={addStudentRef} onClose={() => {
+        setGroupStudents([])
+        
+      }}>
+        <h2>Add Student to Group</h2>
+          <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
+
+            setGroupStudents([])
+            createGroupRef.current?.close()
+          }}/>
+          <form>  
+            <label htmlFor="" className="InviteTitle">Group Students: </label>
+            <SearchBar<Student> name="Student" content={classStudents} currentUserId={userId} defaultAddedContent={groupStudents} updateContent={(content) => {
+              setGroupStudents(content)
+            }}/>
+              
+            <br />
+            {addingStudents ? <div className="LoadingJoin"></div> : <button type="button" onClick={handleAddStudents}>Add Students</button>}
           </form>
       </dialog>
       <CloseWarningDialog closeWarningRef={closeWarningRef} connectedRef={closingRef!} onYes={() => {

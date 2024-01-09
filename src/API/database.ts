@@ -1246,6 +1246,7 @@ async function createGroupLocal(classId: string, projectId:string, name: string,
     console.log("Created group with id " + id)
     await saveFile("Classes",JSON.stringify(localClasses))
     
+    
 }
 
 async function createGroupFB(classId: string, projectId:string, name: string, students: string[]) {
@@ -1390,4 +1391,70 @@ async function deleteGroupLocal(classId: string, projectId: string, groupId: str
 
 async function deleteGroupFB(classId: string, projectId: string, groupId: string){
     await deleteDoc(doc(db, "Classes", classId, "Projects", projectId, "Groups", groupId))
+}
+
+export async function studentJoinGroup(classId: string, projectId: string, groupId: string, userId: string){
+    if(ISLOCAL){
+        await studentJoinGroupLocal(classId, projectId, groupId, userId)
+        return
+    }
+    await studentJoinGroupFB(classId, projectId, groupId, userId)
+}
+
+async function studentJoinGroupLocal(classId: string, projectId: string, groupId: string, userId: string){
+    const group = localClasses[classId].projects[projectId].groups[groupId]
+    group.students.push(userId)
+    await saveFile("Classes", JSON.stringify(localClasses))
+}
+
+async function studentJoinGroupFB(classId: string, projectId: string, groupId: string, userId: string){
+    const group = doc(db, "Classes", classId, "Projects", projectId, "Groups", groupId)
+    const groupData = (await getDoc(group)).data()
+    if (groupData) {
+        await updateDoc(group, {students: [...groupData.students, userId]})
+    }
+}
+
+export async function addStudentsToGroup(classId: string, projectId: string, groupId: string, students: string[]){
+    if(ISLOCAL){
+        await addStudentsToGroupLocal(classId, projectId, groupId, students)
+        return
+    }
+    await addStudentsToGroupFB(classId, projectId, groupId, students)
+}
+
+async function addStudentsToGroupLocal(classId: string, projectId: string, groupId: string, students: string[]){
+    const group = localClasses[classId].projects[projectId].groups[groupId]
+    group.students = [...group.students, ...students]
+    await saveFile("Classes", JSON.stringify(localClasses))
+}
+
+async function addStudentsToGroupFB(classId: string, projectId: string, groupId: string, students: string[]){
+    const group = doc(db, "Classes", classId, "Projects", projectId, "Groups", groupId)
+    const groupData = (await getDoc(group)).data()
+    if (groupData) {
+        await updateDoc(group, {students: [...groupData.students, ...students]})
+    }
+}
+
+export async function leaveGroup(classId: string, projectId: string, groupId: string, userId: string){
+    if(ISLOCAL){
+        await leaveGroupLocal(classId, projectId, groupId, userId)
+        return
+    }
+    await leaveGroupFB(classId, projectId, groupId, userId)
+}
+
+async function leaveGroupLocal(classId: string, projectId: string, groupId: string, userId: string){
+    const group = localClasses[classId].projects[projectId].groups[groupId]
+    group.students = group.students.filter((student) => student != userId)
+    await saveFile("Classes", JSON.stringify(localClasses))
+}
+
+async function leaveGroupFB(classId: string, projectId: string, groupId: string, userId: string){
+    const group = doc(db, "Classes", classId, "Projects", projectId, "Groups", groupId)
+    const groupData = (await getDoc(group)).data()
+    if (groupData) {
+        await updateDoc(group, {students: groupData.students.filter((student: string) => student != userId)})
+    }
 }
