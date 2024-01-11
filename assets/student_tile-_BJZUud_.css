@@ -1,0 +1,1 @@
+.StudentTile{border-radius:10px;border:rgb(203,246,255) solid 1px;min-height:50px;min-width:150px;display:flex;align-items:center;justify-content:space-around;padding-left:10px;padding-right:10px}.StudentName{font-size:medium;height:100%;max-width:150px;text-align:center}.EvalIcon,.PersonIcon{width:20px;cursor:pointer}
