@@ -5,10 +5,12 @@
     max-height: 550px;
     overflow: auto;
     gap: 10px;
+    
 }
 
 .Center{
     overflow: visible !important;
+    border: white solid 1px;
 }
 
 .Title{

@@ -16,6 +16,7 @@ import CloseWarningDialog from "../Dialogs/close_warning_dialog";
 import ChooseColorDialog from "../Dialogs/choose_colors_dialog";
 import GroupTile from "./group_tile";
 import LeaveIcon from "../assets/leave.png"
+import AddPersonIcon from "../assets/add_person.png"
 
 
 function Project() {
@@ -53,6 +54,7 @@ function Project() {
     const [joiningGroup, setJoiningGroup] = useState<boolean>(false)
     const addStudentRef = useRef<HTMLDialogElement>(null)
     const [addingStudents, setAddingStudents] = useState<boolean>(false)
+    const [studentGroupName, setStudentGroupName] = useState<string>("")
 
     useEffect(() => {
         
@@ -107,6 +109,7 @@ function Project() {
         if(sRes != undefined){
           setInGroup(true)
           setGroupId(sRes.id)
+          setStudentGroupName(sRes.name)
           const students = await getStudentsData(sRes.students)
           console.log(students)
           console.log(sRes.students)
@@ -216,7 +219,7 @@ function Project() {
           }}/>
           
           
-         <img src={PlusIcon} alt="add group" className='PlusIcon' onClick={() => {
+         <img src={AddPersonIcon} alt="add group" className='PlusIcon' onClick={() => {
           
           addStudentRef.current?.showModal()
         }}/>
@@ -229,6 +232,7 @@ function Project() {
          
           window.location.href = url.origin + "/Projects/" + url.search 
         }}/>
+        {!isTeacher && inGroup && <h2 className="StudentGroupName">{studentGroupName}</h2>}
        {!isTeacher ?
         inGroup ? <><h3>Students:</h3>
         <div className="Students">
@@ -372,7 +376,7 @@ function Project() {
             <button type="button" onClick={handleCreateGroup}>Create Group</button>
           </form>
       </dialog>
-      <dialog ref={addStudentRef} onClose={() => {
+      <dialog ref={addStudentRef} className="AddStudentDialog" onClose={() => {
         setGroupStudents([])
         
       }}>
@@ -380,7 +384,7 @@ function Project() {
           <img src={CloseIcon} alt="close" className="CloseIcon" onClick={() => {
 
             setGroupStudents([])
-            createGroupRef.current?.close()
+            addStudentRef.current?.close()
           }}/>
           <form>  
             <label htmlFor="" className="InviteTitle">Group Students: </label>
